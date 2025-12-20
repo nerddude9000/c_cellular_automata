@@ -4,13 +4,15 @@ LDLIBS=-lraylib
 DEBUG_FLAGS=-ggdb
 RELEASE_FLAGS=-O2 -DNDEBUG
 
+HEADERS=
+
 .PHONY: all 
 all: build/app_debug build/app_release
 
-build/app_debug: src/main.c build
+build/app_debug: src/main.c $(HEADERS) | build
 	$(CC) $(CFLAGS) $(DEBUG_FLAGS) $(LDLIBS) -o $@ $<
 
-build/app_release: src/main.c build
+build/app_release: src/main.c $(HEADERS) | build
 	$(CC) $(CFLAGS) $(RELEASE_FLAGS) $(LDLIBS) -o $@ $<
 
 
