@@ -15,7 +15,7 @@ int main() {
   Cell map[MAP_SIZE][MAP_SIZE];
   init_map(map);
 
-  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Bismillah");
+  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Falling sands");
 
   SetTargetFPS(60);
   while (!WindowShouldClose()) {
