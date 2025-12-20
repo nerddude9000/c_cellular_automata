@@ -1,0 +1,7 @@
+#ifndef APP_CONSTANTS
+#define APP_CONSTANTS
+
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
+
+#endif

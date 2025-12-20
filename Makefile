@@ -4,7 +4,7 @@ LDLIBS=-lraylib
 DEBUG_FLAGS=-ggdb
 RELEASE_FLAGS=-O2 -DNDEBUG
 
-HEADERS=
+HEADERS=src/constants.h
 
 .PHONY: all 
 all: build/app_debug build/app_release
