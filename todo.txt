@@ -1,1 +1,7 @@
-make the makefile support multiple .c and .h without manual work
+click to add snad blop.
+click to remove snad blop.
+add velocity to snad.
+make snad fall to the side with enough velocity.
+look into more performant ways to render the pixels than DrawRectangle.
+walk through the sim and draw loops four(?) cells at a time because it's faster.
+make the makefile support multiple .c and .h without manual work.

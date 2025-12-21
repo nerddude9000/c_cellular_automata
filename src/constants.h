@@ -1,6 +1,8 @@
 #ifndef APP_CONSTANTS
 #define APP_CONSTANTS
 
+#include <stdint.h>
+
 // square for now
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 800
@@ -10,7 +12,7 @@
 typedef enum { EMPTY, SOLID, FALLING } CellType;
 
 typedef struct {
-  CellType type;
+  uint8_t type;
 } Cell;
 
 #endif
