@@ -75,7 +75,7 @@ void print_map(Cell map[MAP_SIZE][MAP_SIZE]) {
   fclose(f);
 }
 
-int main() {
+int main(void) {
   Cell map[MAP_SIZE][MAP_SIZE];
   init_map(map);
 
