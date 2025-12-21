@@ -3,10 +3,18 @@
 #include <stddef.h>
 #include <stdio.h>
 
-void init_map(Cell map[MAP_SIZE][MAP_SIZE]) {
+Cell *get_cell(Cell *map, int x, int y) {
+  if (x < 0 || x >= MAP_SIZE || y < 0 || y >= MAP_SIZE)
+    return NULL;
+
+  return &(map[y * MAP_SIZE + x]);
+}
+
+void init_map(Cell *map) {
   for (int x = 0; x < MAP_SIZE; x++) {
     for (int y = 0; y < MAP_SIZE; y++) {
       Cell c;
+
       if (y == 5) {
         c.type = FALLING;
       } else if (y == 30 && x > 10 && x < 30) {
@@ -14,19 +22,13 @@ void init_map(Cell map[MAP_SIZE][MAP_SIZE]) {
       } else {
         c.type = EMPTY;
       }
-      map[x][y] = c;
+
+      map[y * MAP_SIZE + x] = c;
     }
   }
 }
 
-Cell *get_cell(Cell map[MAP_SIZE][MAP_SIZE], int x, int y) {
-  if (x < 0 || x >= MAP_SIZE || y < 0 || y >= MAP_SIZE)
-    return NULL;
-
-  return &(map[x][y]);
-}
-
-void sim_and_draw_map(Cell map[MAP_SIZE][MAP_SIZE]) {
+void sim_and_draw_map(Cell *map) {
   // we iterate backwards as to not process the same sand twice.
   // i think this is only temporary, as adding rising smoke will cause the same
   // problem. maybe we can use two maps (current and next) in the future.
@@ -58,25 +60,22 @@ void sim_and_draw_map(Cell map[MAP_SIZE][MAP_SIZE]) {
 }
 
 // for testing
-void print_map(Cell map[MAP_SIZE][MAP_SIZE]) {
+void print_map(Cell *map) {
   FILE *f = fopen("map.tmp", "w");
-  fprintf(f, "Map = \n");
 
   for (int x = 0; x < MAP_SIZE; x++) {
-    fprintf(f, "{");
-
     for (int y = 0; y < MAP_SIZE; y++) {
-      fprintf(f, "%d,", map[x][y].type);
+      fprintf(f, "%d", get_cell(map, x, y)->type);
     }
-
-    fprintf(f, "}\n");
+    fprintf(f, "\n");
   }
 
   fclose(f);
 }
 
 int main(void) {
-  Cell map[MAP_SIZE][MAP_SIZE];
+  Cell map[MAP_SIZE *
+           MAP_SIZE]; // 1D array, but simulates a 2D grid (idx = y * width + x)
   init_map(map);
 
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Falling sands");

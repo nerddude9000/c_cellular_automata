@@ -1,2 +1,1 @@
-change map to 1d array, and use y * w + x to simulate 2d (better performance)
 make the makefile support multiple .c and .h without manual work
