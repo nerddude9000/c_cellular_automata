@@ -7,8 +7,10 @@ void init_map(Cell map[MAP_SIZE][MAP_SIZE]) {
   for (int x = 0; x < MAP_SIZE; x++) {
     for (int y = 0; y < MAP_SIZE; y++) {
       Cell c;
-      if (y == 10) {
+      if (y == 5) {
         c.type = FALLING;
+      } else if (y == 30 && x > 10 && x < 30) {
+        c.type = SOLID;
       } else {
         c.type = EMPTY;
       }
@@ -25,6 +27,9 @@ Cell *get_cell(Cell map[MAP_SIZE][MAP_SIZE], int x, int y) {
 }
 
 void sim_and_draw_map(Cell map[MAP_SIZE][MAP_SIZE]) {
+  // we iterate backwards as to not process the same sand twice.
+  // i think this is only temporary, as adding rising smoke will cause the same
+  // problem. maybe we can use two maps (current and next) in the future.
   for (int y = MAP_SIZE - 1; y >= 0; y--) {
     for (int x = 0; x < MAP_SIZE; x++) {
       Cell *c = get_cell(map, x, y);
@@ -78,10 +83,13 @@ int main() {
 
   SetTargetFPS(60);
   while (!WindowShouldClose()) {
-    BeginDrawing();
-
     if (IsKeyPressed(KEY_P))
       print_map(map);
+
+    if (IsKeyPressed(KEY_R))
+      init_map(map);
+
+    BeginDrawing();
 
     ClearBackground(BLACK);
     sim_and_draw_map(map);
