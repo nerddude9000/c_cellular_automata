@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-std=c99 -pedantic -Wall -Wextra -Wconversion -Wsign-conversion -Werror
+CFLAGS=-std=c99 -Wall -Wextra -Wconversion -Wsign-conversion -Werror
 LDLIBS=-lraylib
 DEBUG_FLAGS=-ggdb
 RELEASE_FLAGS=-O2 -DNDEBUG

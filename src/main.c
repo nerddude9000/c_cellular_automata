@@ -1,6 +1,7 @@
 #include "constants.h"
 #include <raylib.h>
 #include <stddef.h>
+#include <stdio.h>
 
 void init_map(Cell map[MAP_SIZE][MAP_SIZE]) {
   for (int x = 0; x < MAP_SIZE; x++) {
@@ -17,15 +18,15 @@ void init_map(Cell map[MAP_SIZE][MAP_SIZE]) {
 }
 
 Cell *get_cell(Cell map[MAP_SIZE][MAP_SIZE], int x, int y) {
-  if (x < 0 || x > MAP_SIZE || y < 0 || y > MAP_SIZE)
+  if (x < 0 || x >= MAP_SIZE || y < 0 || y >= MAP_SIZE)
     return NULL;
 
   return &(map[x][y]);
 }
 
-void draw_map(Cell map[MAP_SIZE][MAP_SIZE]) {
-  for (int x = 0; x < MAP_SIZE; x++) {
-    for (int y = 0; y < MAP_SIZE; y++) {
+void sim_and_draw_map(Cell map[MAP_SIZE][MAP_SIZE]) {
+  for (int y = MAP_SIZE - 1; y >= 0; y--) {
+    for (int x = 0; x < MAP_SIZE; x++) {
       Cell *c = get_cell(map, x, y);
 
       switch (c->type) {
@@ -35,19 +36,38 @@ void draw_map(Cell map[MAP_SIZE][MAP_SIZE]) {
         DrawRectangle(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE,
                       YELLOW);
 
-/*         if (get_cell(map, x, y + 1)->type == EMPTY) {
+        Cell *bot = get_cell(map, x, y + 1);
+        if (bot != NULL && bot->type == EMPTY) {
+          bot->type = FALLING;
           c->type = EMPTY;
-          get_cell(map, x, y + 1)->type = FALLING;
-        } */
+        }
 
         break;
       case SOLID:
         DrawRectangle(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE,
-                      BLACK);
+                      WHITE);
         break;
       }
     }
   }
+}
+
+// for testing
+void print_map(Cell map[MAP_SIZE][MAP_SIZE]) {
+  FILE *f = fopen("map.tmp", "w");
+  fprintf(f, "Map = \n");
+
+  for (int x = 0; x < MAP_SIZE; x++) {
+    fprintf(f, "{");
+
+    for (int y = 0; y < MAP_SIZE; y++) {
+      fprintf(f, "%d,", map[x][y].type);
+    }
+
+    fprintf(f, "}\n");
+  }
+
+  fclose(f);
 }
 
 int main() {
@@ -60,8 +80,11 @@ int main() {
   while (!WindowShouldClose()) {
     BeginDrawing();
 
+    if (IsKeyPressed(KEY_P))
+      print_map(map);
+
     ClearBackground(BLACK);
-    draw_map(map);
+    sim_and_draw_map(map);
 
     EndDrawing();
   }
