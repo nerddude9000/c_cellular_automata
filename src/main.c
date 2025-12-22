@@ -1,3 +1,4 @@
+#include "main.h"
 #include "constants.h"
 #include <raylib.h>
 #include <stddef.h>
