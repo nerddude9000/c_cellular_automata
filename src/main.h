@@ -12,7 +12,7 @@ void sim_map(Cell map[]);
 void write_map_to_file(Cell map[]);
 void insert_cell_at(Cell map[], int x, int y, CellType cType);
 void remove_cell_at(Cell map[], int x, int y);
-void handle_input(Cell map[]);
+void handle_input(Cell map[], bool *isPaused);
 
 Vector2 screen_to_map_pos(Vector2 screenPos);
 

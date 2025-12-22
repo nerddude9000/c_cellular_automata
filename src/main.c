@@ -111,7 +111,9 @@ void write_map_to_file(Cell map[]) {
   fclose(f);
 }
 
-void handle_input(Cell map[]) {
+void handle_input(Cell map[], bool *isPaused) {
+  // TODO: add brush size for some operations.
+
   if (IsKeyPressed(KEY_P))
     write_map_to_file(map);
 
@@ -123,7 +125,6 @@ void handle_input(Cell map[]) {
     Vector2 mapPos = screen_to_map_pos(mousePos);
 
     // for now it will just insert 1 FALLING cell.
-    // TODO: add brush size and insert.
     // TODO: add selecting CellType to inser.
     insert_cell_at(map, (int)mapPos.x, (int)mapPos.y, FALLING);
   }
@@ -132,8 +133,11 @@ void handle_input(Cell map[]) {
     Vector2 mousePos = {.x = (float)GetMouseX(), .y = (float)GetMouseY()};
     Vector2 mapPos = screen_to_map_pos(mousePos);
 
-    // TODO: add brush size.
     remove_cell_at(map, (int)mapPos.x, (int)mapPos.y);
+  }
+
+  if (IsKeyPressed(KEY_T)) {
+    *isPaused = !(*isPaused);
   }
 }
 
@@ -144,10 +148,13 @@ int main(void) {
 
   InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Falling sandc");
 
+  bool isPaused = false;
   SetTargetFPS(60);
   while (!WindowShouldClose()) {
-    handle_input(map);
-    sim_map(map);
+    handle_input(map, &isPaused);
+
+    if (!isPaused)
+      sim_map(map);
 
     BeginDrawing();
 
