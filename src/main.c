@@ -1,8 +1,16 @@
 #include "main.h"
 #include "constants.h"
 #include <raylib.h>
+#include <raymath.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
+
+Cell new_cell(void) {
+  Cell c = {.type = EMPTY};
+
+  return c;
+}
 
 Cell *get_cell(Cell map[], int x, int y) {
   if (x < 0 || x >= MAP_SIZE || y < 0 || y >= MAP_SIZE)
@@ -14,18 +22,30 @@ Cell *get_cell(Cell map[], int x, int y) {
 void init_map(Cell map[]) {
   for (int x = 0; x < MAP_SIZE; x++) {
     for (int y = 0; y < MAP_SIZE; y++) {
-      Cell c;
+      Cell c = new_cell();
 
       if (y == 5) {
         c.type = FALLING;
       } else if (y == 30 && x > 10 && x < 30) {
         c.type = SOLID;
-      } else {
-        c.type = EMPTY;
       }
 
       map[y * MAP_SIZE + x] = c;
     }
+  }
+}
+
+Vector2 screen_to_map_pos(Vector2 screenPos) {
+  return Vector2Scale(screenPos, 1.0f / ((int)(CELL_SIZE)));
+}
+
+void insert_into_map(Cell map[], int x, int y, CellType cType) {
+  Cell neoCell = new_cell();
+  neoCell.type = (uint8_t)cType;
+
+  Cell *oldCell = get_cell(map, x, y);
+  if (oldCell != NULL && oldCell->type == EMPTY) {
+    *oldCell = neoCell;
   }
 }
 
@@ -90,6 +110,16 @@ void handle_input(Cell map[]) {
 
   if (IsKeyPressed(KEY_R))
     init_map(map);
+
+  if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && IsCursorOnScreen()) {
+    Vector2 mousePos = {.x = (float)GetMouseX(), .y = (float)GetMouseY()};
+    Vector2 mapPos = screen_to_map_pos(mousePos);
+
+    // for now it will just insert 1 FALLING cell.
+    // TODO: add brush size and insert.
+    // TODO: add selecting CellType to inser.
+    insert_into_map(map, (int)mapPos.x, (int)mapPos.y, FALLING);
+  }
 }
 
 int main(void) {

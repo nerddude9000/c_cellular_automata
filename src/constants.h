@@ -9,7 +9,7 @@
 #define MAP_SIZE SCREEN_WIDTH / 10
 #define CELL_SIZE SCREEN_WIDTH / (MAP_SIZE)
 
-typedef enum { EMPTY, SOLID, FALLING } CellType;
+typedef enum { EMPTY = 0, SOLID, FALLING } CellType;
 
 typedef struct {
   uint8_t type;
