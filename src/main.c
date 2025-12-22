@@ -146,11 +146,18 @@ void handle_input(Cell map[], bool *isPaused) {
 }
 
 int main(void) {
+  if (WINDOW_SIZE % MAP_SIZE != 0) {
+    printf("Window size must be divisible by map size to avoid visual bugs.\n");
+    printf("Please change this in constants.h and recompile.\n");
+    return 1;
+  }
+
   Cell map[MAP_SIZE *
            MAP_SIZE]; // 1D array, but simulates a 2D grid (idx = y * width + x)
   init_map(map);
 
-  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Falling sandc");
+  // window is always square
+  InitWindow(WINDOW_SIZE, WINDOW_SIZE, "Falling sandc");
 
   bool isPaused = false;
   SetTargetFPS(60);

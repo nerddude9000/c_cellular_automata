@@ -3,11 +3,10 @@
 
 #include <stdint.h>
 
-// square for now
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 800
-#define MAP_SIZE SCREEN_WIDTH / 10
-#define CELL_SIZE SCREEN_WIDTH / (MAP_SIZE)
+// screen (and map) must be square, so one constant for each is enough
+#define WINDOW_SIZE 800
+#define MAP_SIZE 80 // WINDOW_SIZE % MAP_SIZE must be 0 to avoid visual bugs.
+#define CELL_SIZE WINDOW_SIZE / MAP_SIZE
 
 typedef enum { EMPTY = 0, SOLID, FALLING } CellType;
 
