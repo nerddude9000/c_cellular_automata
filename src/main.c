@@ -4,14 +4,14 @@
 #include <stddef.h>
 #include <stdio.h>
 
-Cell *get_cell(Cell *map, int x, int y) {
+Cell *get_cell(Cell map[], int x, int y) {
   if (x < 0 || x >= MAP_SIZE || y < 0 || y >= MAP_SIZE)
     return NULL;
 
   return &(map[y * MAP_SIZE + x]);
 }
 
-void init_map(Cell *map) {
+void init_map(Cell map[]) {
   for (int x = 0; x < MAP_SIZE; x++) {
     for (int y = 0; y < MAP_SIZE; y++) {
       Cell c;
@@ -29,7 +29,7 @@ void init_map(Cell *map) {
   }
 }
 
-void draw_map(Cell *map) {
+void draw_map(Cell map[]) {
   for (int y = 0; y < MAP_SIZE; y++) {
     for (int x = 0; x < MAP_SIZE; x++) {
       Cell *c = get_cell(map, x, y);
@@ -43,7 +43,7 @@ void draw_map(Cell *map) {
   }
 }
 
-void sim_map(Cell *map) {
+void sim_map(Cell map[]) {
   // we iterate backwards as to not process the same sand twice.
   // i think this is only temporary, as adding rising smoke will cause the same
   // problem. maybe we can use two maps (current and next) in the future.
@@ -71,7 +71,7 @@ void sim_map(Cell *map) {
 }
 
 // for testing
-void write_map_to_file(Cell *map) {
+void write_map_to_file(Cell map[]) {
   FILE *f = fopen("map.tmp", "w");
 
   for (int y = 0; y < MAP_SIZE; y++) {
@@ -84,21 +84,24 @@ void write_map_to_file(Cell *map) {
   fclose(f);
 }
 
+void handle_input(Cell map[]) {
+  if (IsKeyPressed(KEY_P))
+    write_map_to_file(map);
+
+  if (IsKeyPressed(KEY_R))
+    init_map(map);
+}
+
 int main(void) {
   Cell map[MAP_SIZE *
            MAP_SIZE]; // 1D array, but simulates a 2D grid (idx = y * width + x)
   init_map(map);
 
-  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Falling sands");
+  InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Falling sandc");
 
   SetTargetFPS(60);
   while (!WindowShouldClose()) {
-    if (IsKeyPressed(KEY_P))
-      write_map_to_file(map);
-
-    if (IsKeyPressed(KEY_R))
-      init_map(map);
-
+    handle_input(map);
     sim_map(map);
 
     BeginDrawing();
