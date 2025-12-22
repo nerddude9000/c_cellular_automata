@@ -1,5 +1,6 @@
 #include "main.h"
 #include "constants.h"
+#include "shortcuts.h"
 #include <raylib.h>
 #include <raymath.h>
 #include <stddef.h>
@@ -114,13 +115,13 @@ void write_map_to_file(Cell map[]) {
 void handle_input(Cell map[], bool *isPaused) {
   // TODO: add brush size for some operations.
 
-  if (IsKeyPressed(KEY_P))
+  if (IsKeyPressed(K_WRITE_MAP))
     write_map_to_file(map);
 
-  if (IsKeyPressed(KEY_R))
+  if (IsKeyPressed(K_RESET))
     init_map(map);
 
-  if (IsMouseButtonDown(MOUSE_LEFT_BUTTON) && IsCursorOnScreen()) {
+  if (IsMouseButtonDown(M_INSERT) && IsCursorOnScreen()) {
     Vector2 mousePos = {.x = (float)GetMouseX(), .y = (float)GetMouseY()};
     Vector2 mapPos = screen_to_map_pos(mousePos);
 
@@ -129,14 +130,14 @@ void handle_input(Cell map[], bool *isPaused) {
     insert_cell_at(map, (int)mapPos.x, (int)mapPos.y, FALLING);
   }
 
-  if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON) && IsCursorOnScreen()) {
+  if (IsMouseButtonDown(M_REMOVE) && IsCursorOnScreen()) {
     Vector2 mousePos = {.x = (float)GetMouseX(), .y = (float)GetMouseY()};
     Vector2 mapPos = screen_to_map_pos(mousePos);
 
     remove_cell_at(map, (int)mapPos.x, (int)mapPos.y);
   }
 
-  if (IsKeyPressed(KEY_T)) {
+  if (IsKeyPressed(K_PAUSE)) {
     *isPaused = !(*isPaused);
   }
 }

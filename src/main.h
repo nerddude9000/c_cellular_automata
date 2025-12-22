@@ -1,8 +1,8 @@
-#include "constants.h"
-#include <raylib.h>
-
 #ifndef FALLING_SANDS_H
 #define FALLING_SANDS_H
+
+#include "constants.h"
+#include <raylib.h>
 
 Cell new_cell(void);
 Cell *get_cell(Cell map[], int x, int y);
