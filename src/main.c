@@ -39,13 +39,20 @@ Vector2 screen_to_map_pos(Vector2 screenPos) {
   return Vector2Scale(screenPos, 1.0f / ((int)(CELL_SIZE)));
 }
 
-void insert_into_map(Cell map[], int x, int y, CellType cType) {
+void insert_cell_at(Cell map[], int x, int y, CellType cType) {
   Cell neoCell = new_cell();
   neoCell.type = (uint8_t)cType;
 
   Cell *oldCell = get_cell(map, x, y);
   if (oldCell != NULL && oldCell->type == EMPTY) {
     *oldCell = neoCell;
+  }
+}
+
+void remove_cell_at(Cell map[], int x, int y) {
+  Cell *oldCell = get_cell(map, x, y);
+  if (oldCell != NULL && oldCell->type != EMPTY) {
+    *oldCell = new_cell();
   }
 }
 
@@ -118,7 +125,15 @@ void handle_input(Cell map[]) {
     // for now it will just insert 1 FALLING cell.
     // TODO: add brush size and insert.
     // TODO: add selecting CellType to inser.
-    insert_into_map(map, (int)mapPos.x, (int)mapPos.y, FALLING);
+    insert_cell_at(map, (int)mapPos.x, (int)mapPos.y, FALLING);
+  }
+
+  if (IsMouseButtonDown(MOUSE_RIGHT_BUTTON) && IsCursorOnScreen()) {
+    Vector2 mousePos = {.x = (float)GetMouseX(), .y = (float)GetMouseY()};
+    Vector2 mapPos = screen_to_map_pos(mousePos);
+
+    // TODO: add brush size.
+    remove_cell_at(map, (int)mapPos.x, (int)mapPos.y);
   }
 }
 

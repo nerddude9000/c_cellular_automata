@@ -1,6 +1,8 @@
+add pause and unpause sim
 
 util.h
-click to remove snad blop.
+shortcuts.h
+
 add velocity to snad.
 make snad fall to the side with enough velocity.
 look into more performant ways to render the pixels than DrawRectangle.
