@@ -1,11 +1,14 @@
 #include "main.h"
 #include "constants.h"
 #include "shortcuts.h"
+
 #include <raylib.h>
 #include <raymath.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
+
+#define FONT_SIZE 24
 
 Cell new_cell(void) {
   Cell c = {.type = EMPTY};
@@ -161,7 +164,14 @@ int main(void) {
 
     ClearBackground(BLACK);
     draw_map(map);
+
+    // ---- Draw left side text ----
     DrawFPS(0, 0);
+    if (isPaused)
+      DrawText("PAUSED", 0, FONT_SIZE, FONT_SIZE, RED);
+
+    // ---- Draw right side text ----
+    // TODO: display each celltype's count.
 
     EndDrawing();
   }

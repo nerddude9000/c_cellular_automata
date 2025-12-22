@@ -1,4 +1,9 @@
-select cell type to insert (with ui text)
+Make map size constant (not based on screen size!)
+    eg: 100x100, no matter how large the screen is.
+
+display each celltype's count in the right side of ui
+
+select cell type to insert (with text for selected ui)
 
 add velocity to snad.
 make snad fall to the side with enough velocity.
