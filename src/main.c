@@ -22,34 +22,40 @@ Cell *get_cell(Cell map[], int x, int y) {
   return &(map[y * MAP_SIZE + x]);
 }
 
-void init_map(Cell map[]) {
+void init_state(MapState *state) {
+  // TODO: find a better way to zero these.
+  state->cellCount.falling = 0;
+  state->cellCount.solid = 0;
+
   for (int x = 0; x < MAP_SIZE; x++) {
     for (int y = 0; y < MAP_SIZE; y++) {
       Cell c = new_cell();
 
       if (y == 5) {
         c.type = FALLING;
+        state->cellCount.falling++;
       } else if (y == 30 && x > 10 && x < 30) {
         c.type = SOLID;
+        state->cellCount.solid++;
       }
 
-      map[y * MAP_SIZE + x] = c;
+      state->map[y * MAP_SIZE + x] = c;
     }
   }
 }
 
-void insert_cell_at(Cell map[], int x, int y, CellType cType) {
+void insert_cell_at(MapState *state, int x, int y, CellType cType) {
   Cell neoCell = new_cell();
   neoCell.type = (uint8_t)cType;
 
-  Cell *oldCell = get_cell(map, x, y);
+  Cell *oldCell = get_cell(state->map, x, y);
   if (oldCell != NULL && oldCell->type == EMPTY) {
     *oldCell = neoCell;
   }
 }
 
-void remove_cell_at(Cell map[], int x, int y) {
-  Cell *oldCell = get_cell(map, x, y);
+void remove_cell_at(MapState *state, int x, int y) {
+  Cell *oldCell = get_cell(state->map, x, y);
   if (oldCell != NULL && oldCell->type != EMPTY) {
     *oldCell = new_cell();
   }
@@ -97,12 +103,12 @@ void sim_map(Cell map[]) {
 }
 
 // for testing
-void write_map_to_file(Cell map[]) {
+void write_map_to_file(MapState *state) {
   FILE *f = fopen("map.tmp", "w");
 
   for (int y = 0; y < MAP_SIZE; y++) {
     for (int x = 0; x < MAP_SIZE; x++) {
-      fprintf(f, "%d", get_cell(map, x, y)->type);
+      fprintf(f, "%d", get_cell(state->map, x, y)->type);
     }
     fprintf(f, "\n");
   }
@@ -110,14 +116,14 @@ void write_map_to_file(Cell map[]) {
   fclose(f);
 }
 
-void handle_input(Cell map[], bool *isPaused) {
+void handle_input(MapState *state, bool *isPaused) {
   // TODO: add brush size for some operations.
 
   if (IsKeyPressed(K_WRITE_MAP))
-    write_map_to_file(map);
+    write_map_to_file(state);
 
   if (IsKeyPressed(K_RESET))
-    init_map(map);
+    init_state(state);
 
   if (IsMouseButtonDown(M_INSERT) && IsCursorOnScreen()) {
     IVector2 mousePos = {.x = GetMouseX(), .y = GetMouseY()};
@@ -125,14 +131,14 @@ void handle_input(Cell map[], bool *isPaused) {
 
     // for now it will just insert 1 FALLING cell.
     // TODO: add selecting CellType to insert.
-    insert_cell_at(map, mapPos.x, mapPos.y, FALLING);
+    insert_cell_at(state, mapPos.x, mapPos.y, FALLING);
   }
 
   if (IsMouseButtonDown(M_REMOVE) && IsCursorOnScreen()) {
     IVector2 mousePos = {.x = GetMouseX(), .y = GetMouseY()};
     IVector2 mapPos = screen_to_map_pos(mousePos);
 
-    remove_cell_at(map, mapPos.x, mapPos.y);
+    remove_cell_at(state, mapPos.x, mapPos.y);
   }
 
   if (IsKeyPressed(K_PAUSE)) {
@@ -147,9 +153,8 @@ int main(void) {
     return 1;
   }
 
-  Cell map[MAP_SIZE *
-           MAP_SIZE]; // 1D array, but simulates a 2D grid (idx = y * width + x)
-  init_map(map);
+  MapState state;
+  init_state(&state);
 
   // window is always square
   InitWindow(WINDOW_SIZE, WINDOW_SIZE, "Falling sandc");
@@ -157,15 +162,15 @@ int main(void) {
   bool isPaused = false;
   SetTargetFPS(60);
   while (!WindowShouldClose()) {
-    handle_input(map, &isPaused);
+    handle_input(&state, &isPaused);
 
     if (!isPaused)
-      sim_map(map);
+      sim_map(state.map);
 
     BeginDrawing();
 
     ClearBackground(BLACK);
-    draw_map(map);
+    draw_map(state.map);
 
     // ---- Draw left side text ----
     DrawFPS(0, 0);
