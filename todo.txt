@@ -1,4 +1,4 @@
-select cell type to insert (with text for selected ui)
+abstract drawing text stuff
 
 add velocity to snad.
 make snad fall to the side with enough velocity.

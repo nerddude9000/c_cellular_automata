@@ -19,17 +19,19 @@ typedef struct {
   Cell map[MAP_SIZE * MAP_SIZE]; // 1D array, but simulates a 2D grid
                                  // (idx = y * width + x)
   CellCount cellCount;
+  bool isPaused;
+  CellType typeToInsert;
 } MapState;
 
 Cell new_cell(void);
 Cell *get_cell(Cell map[], int x, int y);
-void init_state(MapState *state);
+void init_map(MapState *state);
 void draw_map(Cell map[]);
 void sim_map(MapState *state);
 void write_map_to_file(MapState *state);
 void update_cell_count(MapState *state, CellType cType, int diff);
 void insert_cell_at(MapState *state, int x, int y, CellType cType);
 void remove_cell_at(MapState *state, int x, int y);
-void handle_input(MapState *state, bool *isPaused);
+void handle_input(MapState *state);
 
 #endif

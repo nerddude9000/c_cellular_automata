@@ -35,7 +35,8 @@ void update_cell_count(MapState *state, CellType cType, int diff) {
   }
 }
 
-void init_state(MapState *state) {
+void init_map(MapState *state) {
+
   // TODO: find a better way to zero these.
   state->cellCount.falling = 0;
   state->cellCount.solid = 0;
@@ -129,22 +130,26 @@ void write_map_to_file(MapState *state) {
   fclose(f);
 }
 
-void handle_input(MapState *state, bool *isPaused) {
+void handle_input(MapState *state) {
   // TODO: add brush size for some operations.
+
+  if (IsKeyPressed(K_SELECT_FALLING)) {
+    state->typeToInsert = FALLING;
+  } else if (IsKeyPressed(K_SELECT_SOLID)) {
+    state->typeToInsert = SOLID;
+  }
 
   if (IsKeyPressed(K_WRITE_MAP))
     write_map_to_file(state);
 
   if (IsKeyPressed(K_RESET))
-    init_state(state);
+    init_map(state);
 
   if (IsMouseButtonDown(M_INSERT) && IsCursorOnScreen()) {
     IVector2 mousePos = {.x = GetMouseX(), .y = GetMouseY()};
     IVector2 mapPos = screen_to_map_pos(mousePos);
 
-    // for now it will just insert 1 FALLING cell.
-    // TODO: add selecting CellType to insert.
-    insert_cell_at(state, mapPos.x, mapPos.y, FALLING);
+    insert_cell_at(state, mapPos.x, mapPos.y, state->typeToInsert);
   }
 
   if (IsMouseButtonDown(M_REMOVE) && IsCursorOnScreen()) {
@@ -155,7 +160,7 @@ void handle_input(MapState *state, bool *isPaused) {
   }
 
   if (IsKeyPressed(K_PAUSE)) {
-    *isPaused = !(*isPaused);
+    state->isPaused = !(state->isPaused);
   }
 }
 
@@ -166,18 +171,18 @@ int main(void) {
     return 1;
   }
 
-  MapState state;
-  init_state(&state);
+  MapState state = {.isPaused = false, .typeToInsert = FALLING};
+
+  init_map(&state);
 
   // window is always square
   InitWindow(WINDOW_SIZE, WINDOW_SIZE, "Falling sandc");
 
-  bool isPaused = false;
   SetTargetFPS(60);
   while (!WindowShouldClose()) {
-    handle_input(&state, &isPaused);
+    handle_input(&state);
 
-    if (!isPaused)
+    if (!state.isPaused)
       sim_map(&state);
 
     BeginDrawing();
@@ -187,18 +192,30 @@ int main(void) {
 
     // ---- Draw left side text ----
     DrawFPS(0, 0);
-    if (isPaused)
-      DrawText("PAUSED", 0, FONT_SIZE, FONT_SIZE, RED);
+
+    int yOffset = FONT_SIZE;
+
+    if (state.isPaused) {
+      DrawText("PAUSED", 0, yOffset, FONT_SIZE, RED);
+      yOffset += FONT_SIZE;
+    }
+
+    char *txt = (char *)TextFormat("SELECTED: %s",
+                                   cell_type_to_str(state.typeToInsert));
+    DrawText(txt, 0, yOffset, FONT_SIZE, LIME);
+    yOffset += FONT_SIZE;
 
     // ---- Draw right side text ----
-    // TODO: there's no way this can't be abstracted into a function or smth.
 
-    char *txt = (char *)TextFormat("SAND\t%d", state.cellCount.falling);
+    // TODO: there's no way this can't be abstracted into a function or smth.
+    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(FALLING),
+                             state.cellCount.falling);
     int width = MeasureText(txt, FONT_SIZE);
-    int yOffset = 0;
+    yOffset = 0;
     DrawText(txt, WINDOW_SIZE - width, yOffset, FONT_SIZE, LIME);
 
-    txt = (char *)TextFormat("SOLID\t%d", state.cellCount.solid);
+    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(SOLID),
+                             state.cellCount.solid);
     width = MeasureText(txt, FONT_SIZE);
     yOffset += FONT_SIZE;
     DrawText(txt, WINDOW_SIZE - width, yOffset, FONT_SIZE, LIME);

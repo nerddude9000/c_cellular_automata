@@ -10,6 +10,8 @@
 #define MAP_SIZE 50 // WINDOW_SIZE % MAP_SIZE must be 0 to avoid visual bugs.
 
 enum Shortcuts {
+  K_SELECT_FALLING = KEY_ONE,
+  K_SELECT_SOLID = KEY_TWO,
   K_PAUSE = KEY_P,
   K_WRITE_MAP = KEY_W,
   K_RESET = KEY_R,
