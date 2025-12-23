@@ -4,13 +4,12 @@
 
 #include <raylib.h>
 #include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
 
 #define FONT_SIZE 20
 
 Cell new_cell(void) {
-  Cell c = {.type = EMPTY};
+  Cell c = {.type = EMPTY, .velocity = 0.0f};
 
   return c;
 }
@@ -36,11 +35,11 @@ void update_cell_count(MapState *state, CellType cType, int diff) {
 }
 
 void init_map(MapState *state) {
-
   // TODO: find a better way to zero these.
   state->cellCount.falling = 0;
   state->cellCount.solid = 0;
 
+  // TODO: maybe use malloc for the map to avoid stack overflow.
   for (int x = 0; x < MAP_SIZE; x++) {
     for (int y = 0; y < MAP_SIZE; y++) {
       Cell c = new_cell();
@@ -129,10 +128,31 @@ void sim_map(MapState *state) {
       switch (c->type) {
       case FALLING:; // NOTE: how does this ';' make the compiler shut up?!
         Cell *bot = get_cell(state->map, x, y + 1);
+
+        // this makes it not stuck at 0 velocity
         if (bot != NULL && bot->type == EMPTY) {
+          c->velocity += GRAVITY * SAND_WEIGHT;
+        } else {
+          c->velocity = 0;
+        }
+
+        const int wantsToMove = (int)c->velocity;
+        int moved = 0;
+        while (moved < wantsToMove) {
+          if (bot != NULL && bot->type == EMPTY) {
+            c->velocity += GRAVITY * SAND_WEIGHT;
+
+            moved++;
+            bot = get_cell(state->map, x, y + moved);
+          } else
+            break;
+        }
+
+        if (moved > 0) {
           bot->type = FALLING;
           c->type = EMPTY;
         }
+
         break;
       case SOLID:
         break;

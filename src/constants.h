@@ -19,6 +19,9 @@ enum Shortcuts {
   M_REMOVE = MOUSE_RIGHT_BUTTON
 };
 
+#define GRAVITY 9.8f
+#define SAND_WEIGHT 0.05f
+
 // ---- DON'T TOUCH ----
 #define CELL_SIZE WINDOW_SIZE / MAP_SIZE
 

@@ -8,7 +8,9 @@
 typedef enum { EMPTY = 0, SOLID, FALLING } CellType;
 
 typedef struct {
+  // TODO: check if the ordering of these matters, and if so: how should it be.
   uint8_t type;
+  float velocity;
 } Cell;
 
 typedef struct {
