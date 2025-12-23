@@ -22,6 +22,19 @@ Cell *get_cell(Cell map[], int x, int y) {
   return &(map[y * MAP_SIZE + x]);
 }
 
+void update_cell_count(MapState *state, CellType cType, int diff) {
+  switch (cType) {
+  case FALLING:
+    state->cellCount.falling += diff;
+    break;
+  case SOLID:
+    state->cellCount.solid += diff;
+    break;
+  default:
+    break;
+  }
+}
+
 void init_state(MapState *state) {
   // TODO: find a better way to zero these.
   state->cellCount.falling = 0;
@@ -33,10 +46,10 @@ void init_state(MapState *state) {
 
       if (y == 5) {
         c.type = FALLING;
-        state->cellCount.falling++;
+        update_cell_count(state, FALLING, 1);
       } else if (y == 30 && x > 10 && x < 30) {
         c.type = SOLID;
-        state->cellCount.solid++;
+        update_cell_count(state, SOLID, 1);
       }
 
       state->map[y * MAP_SIZE + x] = c;
@@ -51,12 +64,14 @@ void insert_cell_at(MapState *state, int x, int y, CellType cType) {
   Cell *oldCell = get_cell(state->map, x, y);
   if (oldCell != NULL && oldCell->type == EMPTY) {
     *oldCell = neoCell;
+    update_cell_count(state, cType, 1);
   }
 }
 
 void remove_cell_at(MapState *state, int x, int y) {
   Cell *oldCell = get_cell(state->map, x, y);
   if (oldCell != NULL && oldCell->type != EMPTY) {
+    update_cell_count(state, oldCell->type, -1);
     *oldCell = new_cell();
   }
 }
@@ -75,26 +90,24 @@ void draw_map(Cell map[]) {
   }
 }
 
-void sim_map(Cell map[]) {
+void sim_map(MapState *state) {
   // we iterate backwards as to not process the same sand twice.
   // i think this is only temporary, as adding rising smoke will cause the same
   // problem. maybe we can use two maps (current and next) in the future.
   for (int y = MAP_SIZE - 1; y >= 0; y--) {
     for (int x = 0; x < MAP_SIZE; x++) {
-      Cell *c = get_cell(map, x, y);
+      Cell *c = get_cell(state->map, x, y);
 
       switch (c->type) {
       case FALLING:; // NOTE: how does this ';' make the compiler shut up?!
-        Cell *bot = get_cell(map, x, y + 1);
+        Cell *bot = get_cell(state->map, x, y + 1);
         if (bot != NULL && bot->type == EMPTY) {
           bot->type = FALLING;
           c->type = EMPTY;
         }
-
         break;
       case SOLID:
         break;
-      case EMPTY:
       default:
         break;
       }
@@ -165,7 +178,7 @@ int main(void) {
     handle_input(&state, &isPaused);
 
     if (!isPaused)
-      sim_map(state.map);
+      sim_map(&state);
 
     BeginDrawing();
 
@@ -178,7 +191,17 @@ int main(void) {
       DrawText("PAUSED", 0, FONT_SIZE, FONT_SIZE, RED);
 
     // ---- Draw right side text ----
-    // TODO: display each celltype's count.
+    // TODO: there's no way this can't be abstracted into a function or smth.
+
+    char *txt = (char *)TextFormat("SAND\t%d", state.cellCount.falling);
+    int width = MeasureText(txt, FONT_SIZE);
+    int yOffset = 0;
+    DrawText(txt, WINDOW_SIZE - width, yOffset, FONT_SIZE, LIME);
+
+    txt = (char *)TextFormat("SOLID\t%d", state.cellCount.solid);
+    width = MeasureText(txt, FONT_SIZE);
+    yOffset += FONT_SIZE;
+    DrawText(txt, WINDOW_SIZE - width, yOffset, FONT_SIZE, LIME);
 
     EndDrawing();
   }
