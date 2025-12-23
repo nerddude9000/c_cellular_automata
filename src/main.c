@@ -1,6 +1,5 @@
 #include "main.h"
 #include "constants.h"
-#include "shortcuts.h"
 
 #include <raylib.h>
 #include <raymath.h>
