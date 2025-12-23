@@ -1,13 +1,12 @@
-add velocity to snad.
-make snad fall to the side with enough velocity.
-    try_to_move_to ?
-
 fire
-    add tempreture float, and flamable bool
     add wood cell type
     add fire cell type
     make fire spread to flamable
         (increase temp only, then check each frame for temp > x to turn into fire cell)
+
+add velocity to snad.
+make snad fall to the side with enough velocity.
+    try_to_move_to ?
 
 look into more performant ways to render the pixels than DrawRectangle.
 walk through the sim and draw loops four(?) cells at a time because it's faster.

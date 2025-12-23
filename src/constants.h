@@ -19,6 +19,10 @@ enum Shortcuts {
   M_REMOVE = MOUSE_RIGHT_BUTTON
 };
 
+// for now, these are not like real life (of course) for performance reasons,
+// see Cell struct definition in main.h for more info.
+#define WOOD_SET_ON_FIRE_TEMP 2000;
+
 // ---- DON'T TOUCH ----
 #define CELL_SIZE WINDOW_SIZE / MAP_SIZE
 

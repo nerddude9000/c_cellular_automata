@@ -9,6 +9,11 @@ typedef enum { EMPTY = 0, SOLID, FALLING } CellType;
 
 typedef struct {
   uint8_t type;
+  bool flammable;
+  int16_t tempreture; // using i16 keeps the struct small (floats add 4 bytes
+                      // per cell at least). i might change it in the future if
+                      // we have enough padding space, but for now i like it
+                      // nice and tidy (4 bytes (: )
 } Cell;
 
 typedef struct {
