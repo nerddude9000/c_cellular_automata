@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include <raylib.h>
+#include <stdint.h>
 
 typedef enum { EMPTY = 0, SOLID, FALLING } CellType;
 
@@ -27,6 +28,7 @@ Cell new_cell(void);
 Cell *get_cell(Cell map[], int x, int y);
 void init_map(MapState *state);
 void draw_map(Cell map[]);
+void draw_cell_count(CellType cType, int count, bool resetOffset);
 void sim_map(MapState *state);
 void write_map_to_file(MapState *state);
 void update_cell_count(MapState *state, CellType cType, int diff);

@@ -59,14 +59,28 @@ void init_map(MapState *state) {
 }
 
 void insert_cell_at(MapState *state, int x, int y, CellType cType) {
+  // NOTE: we never replace cell if it's of the same type, and i didn't think it
+  // would be a good idea to do so, maybe i'll add a boolean in constants.h in
+  // the future.
+
   Cell neoCell = new_cell();
   neoCell.type = (uint8_t)cType;
 
   Cell *oldCell = get_cell(state->map, x, y);
-  if (oldCell != NULL && oldCell->type == EMPTY) {
-    *oldCell = neoCell;
+
+  if (oldCell == NULL)
+    return;
+  if (neoCell.type == oldCell->type)
+    return;
+  if (DO_NOT_REPLACE_CELL_ON_INSERT && oldCell->type != EMPTY)
+    return;
+
+  if (oldCell->type == EMPTY)
     update_cell_count(state, cType, 1);
-  }
+  else // here oldCell must be of different type than neoCell
+    update_cell_count(state, oldCell->type, -1);
+
+  *oldCell = neoCell;
 }
 
 void remove_cell_at(MapState *state, int x, int y) {
@@ -89,6 +103,19 @@ void draw_map(Cell map[]) {
         DrawRectangle(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE, GRAY);
     }
   }
+}
+
+void draw_cell_count(CellType cType, int count, bool resetOffset) {
+  static int yOffset = 0;
+
+  if (resetOffset)
+    yOffset = 0;
+  else
+    yOffset += FONT_SIZE;
+
+  char *txt = (char *)TextFormat("%s\t%d", cell_type_to_str(cType), count);
+  int width = MeasureText(txt, FONT_SIZE);
+  DrawText(txt, WINDOW_SIZE - width, yOffset, FONT_SIZE, LIME);
 }
 
 void sim_map(MapState *state) {
@@ -193,32 +220,16 @@ int main(void) {
     // ---- Draw left side text ----
     DrawFPS(0, 0);
 
-    int yOffset = FONT_SIZE;
-
-    if (state.isPaused) {
-      DrawText("PAUSED", 0, yOffset, FONT_SIZE, RED);
-      yOffset += FONT_SIZE;
-    }
-
     char *txt = (char *)TextFormat("SELECTED: %s",
                                    cell_type_to_str(state.typeToInsert));
-    DrawText(txt, 0, yOffset, FONT_SIZE, LIME);
-    yOffset += FONT_SIZE;
+    DrawText(txt, 0, FONT_SIZE, FONT_SIZE, LIME);
+
+    if (state.isPaused)
+      DrawText("PAUSED", 0, FONT_SIZE * 2, FONT_SIZE, RED);
 
     // ---- Draw right side text ----
-
-    // TODO: there's no way this can't be abstracted into a function or smth.
-    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(FALLING),
-                             state.cellCount.falling);
-    int width = MeasureText(txt, FONT_SIZE);
-    yOffset = 0;
-    DrawText(txt, WINDOW_SIZE - width, yOffset, FONT_SIZE, LIME);
-
-    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(SOLID),
-                             state.cellCount.solid);
-    width = MeasureText(txt, FONT_SIZE);
-    yOffset += FONT_SIZE;
-    DrawText(txt, WINDOW_SIZE - width, yOffset, FONT_SIZE, LIME);
+    draw_cell_count(FALLING, state.cellCount.falling, true);
+    draw_cell_count(SOLID, state.cellCount.solid, false);
 
     EndDrawing();
   }
