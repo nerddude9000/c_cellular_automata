@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define FONT_SIZE 24
+#define FONT_SIZE 20
 
 Cell new_cell(void) {
   Cell c = {.type = EMPTY};
