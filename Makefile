@@ -1,10 +1,11 @@
 CC=clang
 CFLAGS=-std=c99 -Wall -Wextra -Wconversion -Wsign-conversion -Werror -pedantic
 LDLIBS=-lraylib
+
 DEBUG_FLAGS=-ggdb
 RELEASE_FLAGS=-O3 -DNDEBUG
 
-HEADERS=src/constants.h
+HEADERS=src/constants.h src/main.h src/util.h
 
 .PHONY: all 
 all: build/app_debug build/app_release

@@ -1,8 +1,8 @@
 #include "main.h"
 #include "constants.h"
+#include "util.h"
 
 #include <raylib.h>
-#include <raymath.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -36,10 +36,6 @@ void init_map(Cell map[]) {
       map[y * MAP_SIZE + x] = c;
     }
   }
-}
-
-Vector2 screen_to_map_pos(Vector2 screenPos) {
-  return Vector2Scale(screenPos, 1.0f / ((int)(CELL_SIZE)));
 }
 
 void insert_cell_at(Cell map[], int x, int y, CellType cType) {
@@ -124,19 +120,19 @@ void handle_input(Cell map[], bool *isPaused) {
     init_map(map);
 
   if (IsMouseButtonDown(M_INSERT) && IsCursorOnScreen()) {
-    Vector2 mousePos = {.x = (float)GetMouseX(), .y = (float)GetMouseY()};
-    Vector2 mapPos = screen_to_map_pos(mousePos);
+    IVector2 mousePos = {.x = GetMouseX(), .y = GetMouseY()};
+    IVector2 mapPos = screen_to_map_pos(mousePos);
 
     // for now it will just insert 1 FALLING cell.
-    // TODO: add selecting CellType to inser.
-    insert_cell_at(map, (int)mapPos.x, (int)mapPos.y, FALLING);
+    // TODO: add selecting CellType to insert.
+    insert_cell_at(map, mapPos.x, mapPos.y, FALLING);
   }
 
   if (IsMouseButtonDown(M_REMOVE) && IsCursorOnScreen()) {
-    Vector2 mousePos = {.x = (float)GetMouseX(), .y = (float)GetMouseY()};
-    Vector2 mapPos = screen_to_map_pos(mousePos);
+    IVector2 mousePos = {.x = GetMouseX(), .y = GetMouseY()};
+    IVector2 mapPos = screen_to_map_pos(mousePos);
 
-    remove_cell_at(map, (int)mapPos.x, (int)mapPos.y);
+    remove_cell_at(map, mapPos.x, mapPos.y);
   }
 
   if (IsKeyPressed(K_PAUSE)) {

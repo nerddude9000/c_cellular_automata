@@ -17,10 +17,4 @@ enum Shortcuts {
 #define MAP_SIZE 80 // WINDOW_SIZE % MAP_SIZE must be 0 to avoid visual bugs.
 #define CELL_SIZE WINDOW_SIZE / MAP_SIZE
 
-typedef enum { EMPTY = 0, SOLID, FALLING } CellType;
-
-typedef struct {
-  uint8_t type;
-} Cell;
-
 #endif

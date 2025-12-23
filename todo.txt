@@ -1,11 +1,11 @@
-int version of Vector2, uninclude raymath.h
-
+look at drawfps()
 display each celltype's count in the right side of ui
 
 select cell type to insert (with text for selected ui)
 
 add velocity to snad.
 make snad fall to the side with enough velocity.
+    try_to_move_to ?
 
 fire
     add tempreture float, and flamable bool
