@@ -36,13 +36,14 @@ void update_cell_count(MapState *state, CellType cType, int diff) {
 }
 
 void init_map(MapState *state) {
-
   // TODO: find a better way to zero these.
   state->cellCount.falling = 0;
   state->cellCount.solid = 0;
 
-  for (int x = 0; x < MAP_SIZE; x++) {
-    for (int y = 0; y < MAP_SIZE; y++) {
+  // for looping through the map (here and in other functions), making the rows
+  // (y) first on the loop, then cols (x), is much much faster because of cache.
+  for (int y = 0; y < MAP_SIZE; y++) {
+    for (int x = 0; x < MAP_SIZE; x++) {
       Cell c = new_cell();
 
       if (y == 5) {
