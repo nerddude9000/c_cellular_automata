@@ -5,7 +5,13 @@
 #include <raylib.h>
 #include <stdint.h>
 
-typedef enum { EMPTY = 0, SOLID, FALLING } CellType;
+typedef enum
+    __attribute__((__packed__)) { // this makes it a packed enum (1 byte)
+      EMPTY = 0,
+      SOLID,
+      FALLING,
+      WOOD
+    } CellType;
 
 typedef struct {
   uint8_t type;
@@ -19,6 +25,7 @@ typedef struct {
 typedef struct {
   int solid;
   int falling;
+  int wood;
 } CellCount;
 
 typedef struct {
@@ -29,7 +36,7 @@ typedef struct {
   CellType typeToInsert;
 } MapState;
 
-Cell new_cell(void);
+Cell new_cell(CellType cType);
 Cell *get_cell(Cell map[], int x, int y);
 void init_map(MapState *state);
 void draw_map(Cell map[]);

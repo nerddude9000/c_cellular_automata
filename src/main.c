@@ -10,8 +10,18 @@
 
 #define FONT_SIZE 20
 
-Cell new_cell(void) {
-  Cell c = {.type = EMPTY};
+Cell new_cell(CellType cType) {
+  Cell c = {.type = (uint8_t)cType, .tempreture = 0, .flammable = false};
+
+  switch (cType) {
+  case WOOD:
+    c.flammable = true;
+    break;
+  case FALLING:
+  case SOLID:
+  case EMPTY:
+    break;
+  }
 
   return c;
 }
@@ -31,21 +41,22 @@ void update_cell_count(MapState *state, CellType cType, int diff) {
   case SOLID:
     state->cellCount.solid += diff;
     break;
-  default:
+  case WOOD:
+    state->cellCount.wood += diff;
+    break;
+  case EMPTY:
     break;
   }
 }
 
 void init_map(MapState *state) {
-  // TODO: find a better way to zero these.
-  state->cellCount.falling = 0;
-  state->cellCount.solid = 0;
+  state->cellCount = (CellCount){0};
 
   // for looping through the map (here and in other functions), making the rows
   // (y) first on the loop, then cols (x), is much much faster because of cache.
   for (int y = 0; y < MAP_SIZE; y++) {
     for (int x = 0; x < MAP_SIZE; x++) {
-      Cell c = new_cell();
+      Cell c = new_cell(EMPTY);
 
       if (y == 5) {
         c.type = FALLING;
@@ -65,8 +76,7 @@ void insert_cell_at(MapState *state, int x, int y, CellType cType) {
   // would be a good idea to do so, maybe i'll add a boolean in constants.h in
   // the future.
 
-  Cell neoCell = new_cell();
-  neoCell.type = (uint8_t)cType;
+  Cell neoCell = new_cell(cType);
 
   Cell *oldCell = get_cell(state->map, x, y);
 
@@ -89,7 +99,7 @@ void remove_cell_at(MapState *state, int x, int y) {
   Cell *oldCell = get_cell(state->map, x, y);
   if (oldCell != NULL && oldCell->type != EMPTY) {
     update_cell_count(state, oldCell->type, -1);
-    *oldCell = new_cell();
+    *oldCell = new_cell(EMPTY);
   }
 }
 
@@ -97,12 +107,25 @@ void draw_map(Cell map[]) {
   for (int y = 0; y < MAP_SIZE; y++) {
     for (int x = 0; x < MAP_SIZE; x++) {
       Cell *c = get_cell(map, x, y);
+      Color color;
 
-      if (c->type == FALLING)
+      switch ((CellType)c->type) {
+      case FALLING:
+        color = YELLOW;
+        break;
+      case SOLID:
+        color = GRAY;
+        break;
+      case WOOD:
+        color = BROWN;
+        break;
+      case EMPTY:
+        break;
+      }
+
+      if (c->type != EMPTY)
         DrawRectangle(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE,
-                      YELLOW);
-      else if (c->type == SOLID)
-        DrawRectangle(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE, GRAY);
+                      color);
     }
   }
 }
@@ -128,7 +151,7 @@ void sim_map(MapState *state) {
     for (int x = 0; x < MAP_SIZE; x++) {
       Cell *c = get_cell(state->map, x, y);
 
-      switch (c->type) {
+      switch ((CellType)c->type) {
       case FALLING:; // NOTE: how does this ';' make the compiler shut up?!
         Cell *bot = get_cell(state->map, x, y + 1);
         if (bot != NULL && bot->type == EMPTY) {
@@ -138,7 +161,9 @@ void sim_map(MapState *state) {
         break;
       case SOLID:
         break;
-      default:
+      case WOOD:
+        break;
+      case EMPTY:
         break;
       }
     }
@@ -162,11 +187,12 @@ void write_map_to_file(MapState *state) {
 void handle_input(MapState *state) {
   // TODO: add brush size for some operations.
 
-  if (IsKeyPressed(K_SELECT_FALLING)) {
+  if (IsKeyPressed(K_SELECT_FALLING))
     state->typeToInsert = FALLING;
-  } else if (IsKeyPressed(K_SELECT_SOLID)) {
+  else if (IsKeyPressed(K_SELECT_SOLID))
     state->typeToInsert = SOLID;
-  }
+  else if (IsKeyPressed(K_SELECT_WOOD))
+    state->typeToInsert = WOOD;
 
   if (IsKeyPressed(K_WRITE_MAP))
     write_map_to_file(state);
@@ -176,7 +202,7 @@ void handle_input(MapState *state) {
 
   if (IsMouseButtonDown(M_INSERT) && IsCursorOnScreen()) {
     Vector2 mapPos = get_mouse_pos_on_map();
-    insert_cell_at(state, mapPos.x, mapPos.y, state->typeToInsert);
+    insert_cell_at(state, (int)mapPos.x, (int)mapPos.y, state->typeToInsert);
   }
 
   if (IsMouseButtonDown(M_REMOVE) && IsCursorOnScreen()) {
@@ -228,6 +254,7 @@ int main(void) {
     // ---- Draw right side text ----
     draw_cell_count(FALLING, state.cellCount.falling, true);
     draw_cell_count(SOLID, state.cellCount.solid, false);
+    draw_cell_count(WOOD, state.cellCount.solid, false);
 
     EndDrawing();
   }

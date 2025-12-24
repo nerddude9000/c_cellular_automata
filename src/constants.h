@@ -6,12 +6,13 @@
 // ---- Customizable ----
 // screen (and map) must be square, so one constant for each is enough
 #define WINDOW_SIZE 1000
-#define MAP_SIZE 1000 // WINDOW_SIZE % MAP_SIZE must be 0 to avoid visual bugs.
+#define MAP_SIZE 50 // WINDOW_SIZE % MAP_SIZE must be 0 to avoid visual bugs.
 
 #define DO_NOT_REPLACE_CELL_ON_INSERT false
 enum Shortcuts {
   K_SELECT_FALLING = KEY_ONE,
   K_SELECT_SOLID = KEY_TWO,
+  K_SELECT_WOOD = KEY_THREE,
   K_PAUSE = KEY_P,
   K_WRITE_MAP = KEY_W,
   K_RESET = KEY_R,

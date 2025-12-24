@@ -15,7 +15,7 @@ insert by brush
     insert by brush (hopefully blazingly fast)
     remove by brush
 
-look into more performant ways to render the pixels than DrawRectangle.
+look into more performant ways to render the pixels than DrawRectangle (maybe drawpixel with zoomed camera?).
 walk through the sim and draw loops four(?) cells at a time because it's faster.
 make the makefile support multiple .c and .h without manual work.
 
