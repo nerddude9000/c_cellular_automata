@@ -22,8 +22,8 @@ typedef struct {
 } CellCount;
 
 typedef struct {
-  Cell map[MAP_SIZE * MAP_SIZE]; // 1D array, but simulates a 2D grid
-                                 // (idx = y * width + x)
+  Cell map[MAP_SIZE * MAP_SIZE]; // Row-Major Order; 1D array, but simulates a
+                                 // 2D grid (idx = y * width + x)
   CellCount cellCount;
   bool isPaused;
   CellType typeToInsert;
