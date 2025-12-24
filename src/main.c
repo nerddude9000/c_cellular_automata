@@ -3,6 +3,7 @@
 #include "util.h"
 
 #include <raylib.h>
+#include <raymath.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -174,17 +175,13 @@ void handle_input(MapState *state) {
     init_map(state);
 
   if (IsMouseButtonDown(M_INSERT) && IsCursorOnScreen()) {
-    IVector2 mousePos = {.x = GetMouseX(), .y = GetMouseY()};
-    IVector2 mapPos = screen_to_map_pos(mousePos);
-
+    Vector2 mapPos = get_mouse_pos_on_map();
     insert_cell_at(state, mapPos.x, mapPos.y, state->typeToInsert);
   }
 
   if (IsMouseButtonDown(M_REMOVE) && IsCursorOnScreen()) {
-    IVector2 mousePos = {.x = GetMouseX(), .y = GetMouseY()};
-    IVector2 mapPos = screen_to_map_pos(mousePos);
-
-    remove_cell_at(state, mapPos.x, mapPos.y);
+    Vector2 mapPos = get_mouse_pos_on_map();
+    remove_cell_at(state, (int)mapPos.x, (int)mapPos.y);
   }
 
   if (IsKeyPressed(K_PAUSE)) {

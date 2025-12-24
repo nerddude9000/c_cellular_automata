@@ -8,6 +8,15 @@ add velocity to snad.
 make snad fall to the side with enough velocity.
     try_to_move_to ?
 
+decouple sim fps from render fps if possible (this makes inserting smoother when moving the mouse fast)
+
+insert by brush
+    set brush size
+    insert by brush (hopefully blazingly fast)
+    remove by brush
+
 look into more performant ways to render the pixels than DrawRectangle.
 walk through the sim and draw loops four(?) cells at a time because it's faster.
 make the makefile support multiple .c and .h without manual work.
+
+zooming

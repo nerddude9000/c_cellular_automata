@@ -3,19 +3,18 @@
 
 #include "constants.h"
 #include "main.h"
+#include <raylib.h>
+#include <raymath.h>
 
-typedef struct {
-  int x, y;
-} IVector2;
+static inline Vector2 screen_to_map_pos(Vector2 screenPos) {
+  return Vector2Scale(screenPos, 1.0f / CELL_SIZE);
+}
 
-static inline IVector2 screen_to_map_pos(IVector2 screenPos) {
-  float x = (float)screenPos.x;
-  float y = (float)screenPos.y;
+static inline Vector2 get_mouse_pos_on_map() {
+  Vector2 mousePos = {.x = GetMouseX() * 1.0f, .y = GetMouseY() * 1.0f};
+  Vector2 mapPos = screen_to_map_pos(mousePos);
 
-  x /= 1.f * CELL_SIZE;
-  y /= 1.f * CELL_SIZE;
-
-  return (IVector2){(int)x, (int)y};
+  return mapPos;
 }
 
 static inline const char *cell_type_to_str(CellType cType) {
