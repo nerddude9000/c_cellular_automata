@@ -1,5 +1,4 @@
 fire
-    add wood cell type
     add fire cell type
     make fire spread to flamable
         (increase temp only, then check each frame for temp > x to turn into fire cell)

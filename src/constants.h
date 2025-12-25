@@ -27,6 +27,6 @@ enum Shortcuts {
 #define FONT_SIZE 20
 
 // ---- DON'T TOUCH ----
-#define CELL_SIZE WINDOW_SIZE / MAP_SIZE
+#define CELL_SIZE (WINDOW_SIZE / MAP_SIZE)
 
 #endif

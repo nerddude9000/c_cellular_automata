@@ -7,15 +7,7 @@
 #include <raymath.h>
 
 static inline Vector2 screen_to_map_pos(Vector2 screenPos) {
-  // NOTE: i could NOT make this shorter, for some reason try to make it a one
-  // liner screws up the result!
-  float x = (float)screenPos.x;
-  float y = (float)screenPos.y;
-
-  x /= (float)CELL_SIZE;
-  y /= (float)CELL_SIZE;
-
-  return (Vector2){x, y};
+  return Vector2Scale(screenPos, 1.0f / ((int)CELL_SIZE));
 }
 
 static inline Vector2 get_mouse_pos_on_map(void) {
