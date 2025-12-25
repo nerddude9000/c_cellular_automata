@@ -4,11 +4,10 @@
 
 #include <raylib.h>
 #include <raymath.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
-
-#define FONT_SIZE 20
 
 Cell new_cell(CellType cType) {
   Cell c = {.type = (uint8_t)cType, .tempreture = 0, .flammable = false};
@@ -130,17 +129,27 @@ void draw_map(Cell map[]) {
   }
 }
 
-void draw_cell_count(CellType cType, int count, bool resetOffset) {
-  static int yOffset = 0;
+void draw_ui_text(char *txt, bool leftSide, bool resetOffset) {
+  static int yOffsetLeft = 0;
+  static int yOffsetRight = 0;
 
-  if (resetOffset)
-    yOffset = 0;
+  if (resetOffset) {
+    if (leftSide)
+      yOffsetLeft = 0;
+    else
+      yOffsetRight = 0;
+  }
+
+  int txtWidth = MeasureText(txt, FONT_SIZE);
+  int y = leftSide ? yOffsetLeft : yOffsetRight;
+  int x = leftSide ? 0 : WINDOW_SIZE - txtWidth;
+
+  DrawText(txt, x, y, FONT_SIZE, LIME);
+
+  if (leftSide)
+    yOffsetLeft += FONT_SIZE;
   else
-    yOffset += FONT_SIZE;
-
-  char *txt = (char *)TextFormat("%s\t%d", cell_type_to_str(cType), count);
-  int width = MeasureText(txt, FONT_SIZE);
-  DrawText(txt, WINDOW_SIZE - width, yOffset, FONT_SIZE, LIME);
+    yOffsetRight += FONT_SIZE;
 }
 
 void sim_map(MapState *state) {
@@ -241,20 +250,29 @@ int main(void) {
     ClearBackground(BLACK);
     draw_map(state.map);
 
+#define LEFT_SIDE true
     // ---- Draw left side text ----
-    DrawFPS(0, 0);
+    char *txt = (char *)TextFormat("FPS %d", GetFPS());
+    draw_ui_text(txt, LEFT_SIDE, true);
 
-    char *txt = (char *)TextFormat("SELECTED: %s",
-                                   cell_type_to_str(state.typeToInsert));
-    DrawText(txt, 0, FONT_SIZE, FONT_SIZE, LIME);
+    txt =
+        (char *)TextFormat("SELECTED %s", cell_type_to_str(state.typeToInsert));
+    draw_ui_text(txt, LEFT_SIDE, false);
 
     if (state.isPaused)
-      DrawText("PAUSED", 0, FONT_SIZE * 2, FONT_SIZE, RED);
+      draw_ui_text("PAUSED", LEFT_SIDE, false);
 
+#define RIGHT_SIDE false
     // ---- Draw right side text ----
-    draw_cell_count(FALLING, state.cellCount.falling, true);
-    draw_cell_count(SOLID, state.cellCount.solid, false);
-    draw_cell_count(WOOD, state.cellCount.solid, false);
+    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(FALLING),
+                             state.cellCount.falling);
+    draw_ui_text(txt, RIGHT_SIDE, true);
+    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(SOLID),
+                             state.cellCount.solid);
+    draw_ui_text(txt, RIGHT_SIDE, false);
+    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(WOOD),
+                             state.cellCount.wood);
+    draw_ui_text(txt, RIGHT_SIDE, false);
 
     EndDrawing();
   }
