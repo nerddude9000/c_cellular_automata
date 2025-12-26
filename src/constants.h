@@ -13,6 +13,7 @@ enum Shortcuts {
   K_SELECT_FALLING = KEY_ONE,
   K_SELECT_SOLID = KEY_TWO,
   K_SELECT_WOOD = KEY_THREE,
+  K_SELECT_FIRE = KEY_FOUR,
   K_PAUSE = KEY_P,
   K_WRITE_MAP = KEY_W,
   K_RESET = KEY_R,
@@ -23,6 +24,10 @@ enum Shortcuts {
 // for now, these are not like real life (of course) for performance reasons,
 // see Cell struct definition in main.h for more info.
 #define WOOD_SET_ON_FIRE_TEMP 2000;
+
+// in frames, if the game is 60 FPS then it will last for (60*y)
+// frames (y seconds).
+#define FIRE_LIFETIME 60 * 3
 
 #define FONT_SIZE 20
 

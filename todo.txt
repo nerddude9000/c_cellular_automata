@@ -1,7 +1,7 @@
 fire
-    add fire cell type
     make fire spread to flamable
         (increase temp only, then check each frame for temp > x to turn into fire cell)
+    make sand pass through fire (put it out)
 
 add velocity to snad.
 make snad fall to the side with enough velocity.
@@ -17,5 +17,10 @@ insert by brush
 look into more performant ways to render the pixels than DrawRectangle (maybe drawpixel with zoomed camera?).
 walk through the sim and draw loops four(?) cells at a time because it's faster.
 make the makefile support multiple .c and .h without manual work.
+
+
+maybe decouple map size from window size to allow for different aspect ratios
+    but for this we have to use malloc ):
+    if this effects the perfomance by a bit then i won't do it, or most likely i'll make it optional
 
 zooming

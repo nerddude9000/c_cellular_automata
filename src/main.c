@@ -13,6 +13,9 @@ Cell new_cell(CellType cType) {
   Cell c = {.type = (uint8_t)cType, .tempreture = 0, .flammable = false};
 
   switch (cType) {
+  case FIRE:
+    c.lifetime = FIRE_LIFETIME;
+    break;
   case WOOD:
     c.flammable = true;
     break;
@@ -42,6 +45,9 @@ void update_cell_count(MapState *state, CellType cType, int diff) {
     break;
   case WOOD:
     state->cellCount.wood += diff;
+    break;
+  case FIRE:
+    state->cellCount.fire += diff;
     break;
   case EMPTY:
     break;
@@ -118,6 +124,10 @@ void draw_map(Cell map[]) {
       case WOOD:
         color = BROWN;
         break;
+      case FIRE:;
+        int halfLife = FIRE_LIFETIME / 2;
+        color = c->lifetime > halfLife ? RED : ORANGE;
+        break;
       case EMPTY:
         break;
       }
@@ -168,6 +178,15 @@ void sim_map(MapState *state) {
           c->type = EMPTY;
         }
         break;
+
+      case FIRE:;
+        // TODO: add spreading and co.
+
+        if (c->lifetime <= 0)
+          remove_cell_at(state, x, y);
+        else
+          c->lifetime--;
+        break;
       case SOLID:
         break;
       case WOOD:
@@ -202,6 +221,8 @@ void handle_input(MapState *state) {
     state->typeToInsert = SOLID;
   else if (IsKeyPressed(K_SELECT_WOOD))
     state->typeToInsert = WOOD;
+  else if (IsKeyPressed(K_SELECT_FIRE))
+    state->typeToInsert = FIRE;
 
   if (IsKeyPressed(K_WRITE_MAP))
     write_map_to_file(state);

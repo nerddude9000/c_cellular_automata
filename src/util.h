@@ -29,6 +29,9 @@ static inline const char *cell_type_to_str(CellType cType) {
   case WOOD:
     ret = "WOOD";
     break;
+  case FIRE:
+    ret = "FIRE";
+    break;
   case EMPTY:
     break;
   }
