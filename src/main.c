@@ -165,7 +165,7 @@ void sim_map(MapState *state) {
       switch ((CellType)c->type) {
       case FALLING:; // NOTE: how does this ';' make the compiler shut up?!
         Cell *bot = get_cell(state->map, x, y + 1);
-        if (bot != NULL && bot->type == EMPTY) {
+        if (bot != NULL && (bot->type == EMPTY || bot->type == FIRE)) {
           bot->type = FALLING;
           c->type = EMPTY;
         }
