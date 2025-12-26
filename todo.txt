@@ -1,6 +1,5 @@
 fire
-    make fire spread to flamable
-        (increase temp only, then check each frame for temp > x to turn into fire cell)
+    use min and max for temperture changes to avoid passing the int limit
     make sand pass through fire (put it out)
 
 add velocity to snad.
@@ -8,6 +7,9 @@ make snad fall to the side with enough velocity.
     try_to_move_to ?
 
 decouple sim fps from render fps if possible (this makes inserting smoother when moving the mouse fast)
+
+maybe make fire spread by chance?
+    ie: 1/2 to increase spread.
 
 insert by brush
     set brush size

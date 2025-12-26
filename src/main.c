@@ -10,11 +10,13 @@
 #include <stdio.h>
 
 Cell new_cell(CellType cType) {
-  Cell c = {.type = (uint8_t)cType, .tempreture = 0, .flammable = false};
+  Cell c = {
+      .type = (uint8_t)cType, .tempreture = STARTING_TEMP, .flammable = false};
 
   switch (cType) {
   case FIRE:
     c.lifetime = FIRE_LIFETIME;
+    c.tempreture = HOT_CELLS_STARTING_TEMP;
     break;
   case WOOD:
     c.flammable = true;
@@ -180,20 +182,37 @@ void sim_map(MapState *state) {
         break;
 
       case FIRE:;
-        // TODO: add spreading and co.
-
         if (c->lifetime <= 0)
           remove_cell_at(state, x, y);
         else
           c->lifetime--;
+
+        // fire spread
+        for (int cx = -1; cx <= 1; cx++) {
+          for (int cy = -1; cy <= 1; cy++) {
+            if (cx == 0 && cy == 0)
+              continue; // we don't check own cell
+
+            Cell *neighbor = get_cell(state->map, x + cx, y + cy);
+            neighbor->tempreture += FIRE_HEATING_PER_FRAME;
+          }
+        }
         break;
       case SOLID:
         break;
       case WOOD:
+        if (c->tempreture >= WOOD_SET_ON_FIRE_TEMP) {
+          remove_cell_at(state, x, y);
+          insert_cell_at(state, x, y, FIRE);
+        }
         break;
       case EMPTY:
         break;
       }
+
+      // These run on ALL cells
+      if (c->tempreture > STARTING_TEMP)
+        c->tempreture -= COOLING_PER_FRAME;
     }
   }
 }
@@ -293,6 +312,9 @@ int main(void) {
     draw_ui_text(txt, RIGHT_SIDE, false);
     txt = (char *)TextFormat("%s\t%d", cell_type_to_str(WOOD),
                              state.cellCount.wood);
+    draw_ui_text(txt, RIGHT_SIDE, false);
+    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(FIRE),
+                             state.cellCount.fire);
     draw_ui_text(txt, RIGHT_SIDE, false);
 
     EndDrawing();

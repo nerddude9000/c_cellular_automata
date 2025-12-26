@@ -23,7 +23,11 @@ enum Shortcuts {
 
 // for now, these are not like real life (of course) for performance reasons,
 // see Cell struct definition in main.h for more info.
-#define WOOD_SET_ON_FIRE_TEMP 2000;
+#define STARTING_TEMP 100
+#define HOT_CELLS_STARTING_TEMP 2000
+#define COOLING_PER_FRAME 20
+#define FIRE_HEATING_PER_FRAME 50
+#define WOOD_SET_ON_FIRE_TEMP 2000
 
 // in frames, if the game is 60 FPS then it will last for (60*y)
 // frames (y seconds).
