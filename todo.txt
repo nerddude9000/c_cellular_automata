@@ -1,7 +1,3 @@
-add velocity to snad.
-make snad fall to the side with enough velocity.
-    try_to_move_to ?
-
 decouple sim fps from render fps if possible (this makes inserting smoother when moving the mouse fast)
 
 maybe make fire spread by chance?
@@ -24,5 +20,7 @@ make the makefile support multiple .c and .h without manual work.
 maybe decouple map size from window size to allow for different aspect ratios
     but for this we have to use malloc ):
     if this effects the perfomance by a bit then i won't do it, or most likely i'll make it optional
+
+add velocity to snad.
 
 zooming

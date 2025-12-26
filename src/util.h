@@ -5,6 +5,7 @@
 #include "main.h"
 #include <raylib.h>
 #include <raymath.h>
+#include <stdio.h>
 
 static inline int min(int a, int b) { return a > b ? b : a; }
 static inline int max(int a, int b) { return a > b ? a : b; }
@@ -40,6 +41,12 @@ static inline const char *cell_type_to_str(CellType cType) {
   }
 
   return ret;
+}
+
+static inline bool can_sand_move_to(Cell *map, int x, int y) {
+  Cell *c = get_cell(map, x, y);
+
+  return c != NULL && (c->type == EMPTY || c->type == FIRE);
 }
 
 #endif

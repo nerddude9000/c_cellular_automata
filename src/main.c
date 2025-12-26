@@ -164,11 +164,21 @@ void sim_map(MapState *state) {
 
       switch ((CellType)c->type) {
       case FALLING:; // NOTE: how does this ';' make the compiler shut up?!
-        Cell *bot = get_cell(state->map, x, y + 1);
-        if (bot != NULL && (bot->type == EMPTY || bot->type == FIRE)) {
-          bot->type = FALLING;
+        Cell *next = NULL;
+        if (can_sand_move_to(state->map, x, y + 1))
+          next = get_cell(state->map, x, y + 1);
+
+        else if (can_sand_move_to(state->map, x + 1, y + 1))
+          next = get_cell(state->map, x + 1, y + 1);
+
+        else if (can_sand_move_to(state->map, x - 1, y + 1))
+          next = get_cell(state->map, x - 1, y + 1);
+
+        if (next != NULL) {
+          next->type = FALLING;
           c->type = EMPTY;
         }
+
         break;
 
       case FIRE:;
