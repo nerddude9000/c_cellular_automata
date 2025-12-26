@@ -1,6 +1,5 @@
 fire
-    use min and max for temperture changes to avoid passing the int limit
-    make sand pass through fire (put it out)
+    make sand pass through fire (and put it out)
 
 add velocity to snad.
 make snad fall to the side with enough velocity.
@@ -15,6 +14,10 @@ insert by brush
     set brush size
     insert by brush (hopefully blazingly fast)
     remove by brush
+
+liquid nitrogen
+    because why not
+    (opposite of fire of course, and freezes water)
 
 look into more performant ways to render the pixels than DrawRectangle (maybe drawpixel with zoomed camera?).
 walk through the sim and draw loops four(?) cells at a time because it's faster.

@@ -6,6 +6,9 @@
 #include <raylib.h>
 #include <raymath.h>
 
+static inline int min(int a, int b) { return a > b ? b : a; }
+static inline int max(int a, int b) { return a > b ? a : b; }
+
 static inline Vector2 screen_to_map_pos(Vector2 screenPos) {
   return Vector2Scale(screenPos, 1.0f / ((int)CELL_SIZE));
 }
@@ -23,7 +26,7 @@ static inline const char *cell_type_to_str(CellType cType) {
   case FALLING:
     ret = "SAND";
     break;
-  case SOLID:
+  case ROCK:
     ret = "ROCK";
     break;
   case WOOD:

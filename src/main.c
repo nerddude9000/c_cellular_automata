@@ -22,7 +22,7 @@ Cell new_cell(CellType cType) {
     c.flammable = true;
     break;
   case FALLING:
-  case SOLID:
+  case ROCK:
   case EMPTY:
     break;
   }
@@ -42,8 +42,8 @@ void update_cell_count(MapState *state, CellType cType, int diff) {
   case FALLING:
     state->cellCount.falling += diff;
     break;
-  case SOLID:
-    state->cellCount.solid += diff;
+  case ROCK:
+    state->cellCount.rock += diff;
     break;
   case WOOD:
     state->cellCount.wood += diff;
@@ -64,46 +64,36 @@ void init_map(MapState *state) {
   for (int y = 0; y < MAP_SIZE; y++) {
     for (int x = 0; x < MAP_SIZE; x++) {
       Cell c = new_cell(EMPTY);
-
-      if (y == 5) {
-        c.type = FALLING;
-        update_cell_count(state, FALLING, 1);
-      } else if (y == 30 && x > 10 && x < 30) {
-        c.type = SOLID;
-        update_cell_count(state, SOLID, 1);
-      }
-
       state->map[y * MAP_SIZE + x] = c;
     }
   }
 }
 
-void insert_cell_at(MapState *state, int x, int y, CellType cType) {
+void insert_cell_at(MapState *state, int x, int y, CellType newType) {
   // NOTE: we never replace cell if it's of the same type, and i didn't think it
   // would be a good idea to do so, maybe i'll add a boolean in constants.h in
   // the future.
 
-  Cell neoCell = new_cell(cType);
-
   Cell *oldCell = get_cell(state->map, x, y);
 
-  if (oldCell == NULL)
+  if (oldCell == NULL) // out of bounds
     return;
-  if (neoCell.type == oldCell->type)
+  if (newType == oldCell->type)
     return;
-  if (DO_NOT_REPLACE_CELL_ON_INSERT && oldCell->type != EMPTY)
+  if (!REPLACE_CELL_OF_DIFFERENT_TYPE_ON_INSERT && oldCell->type != EMPTY)
     return;
 
-  if (oldCell->type == EMPTY)
-    update_cell_count(state, cType, 1);
-  else // here oldCell must be of different type than neoCell
+  if (oldCell->type != EMPTY)
     update_cell_count(state, oldCell->type, -1);
 
-  *oldCell = neoCell;
+  update_cell_count(state, newType, 1);
+  *oldCell = new_cell(newType);
 }
 
 void remove_cell_at(MapState *state, int x, int y) {
   Cell *oldCell = get_cell(state->map, x, y);
+
+  // must be in bounds AND not empty to remove it.
   if (oldCell != NULL && oldCell->type != EMPTY) {
     update_cell_count(state, oldCell->type, -1);
     *oldCell = new_cell(EMPTY);
@@ -120,7 +110,7 @@ void draw_map(Cell map[]) {
       case FALLING:
         color = YELLOW;
         break;
-      case SOLID:
+      case ROCK:
         color = GRAY;
         break;
       case WOOD:
@@ -182,7 +172,7 @@ void sim_map(MapState *state) {
         break;
 
       case FIRE:;
-        if (c->lifetime <= 0)
+        if (c->lifetime <= 0 || c->tempreture <= HOT_CELLS_STARTING_TEMP / 2)
           remove_cell_at(state, x, y);
         else
           c->lifetime--;
@@ -194,11 +184,12 @@ void sim_map(MapState *state) {
               continue; // we don't check own cell
 
             Cell *neighbor = get_cell(state->map, x + cx, y + cy);
-            neighbor->tempreture += FIRE_HEATING_PER_FRAME;
+            neighbor->tempreture = (int16_t)min(
+                neighbor->tempreture + FIRE_HEATING_PER_FRAME, INT16_MAX);
           }
         }
         break;
-      case SOLID:
+      case ROCK:
         break;
       case WOOD:
         if (c->tempreture >= WOOD_SET_ON_FIRE_TEMP) {
@@ -211,8 +202,13 @@ void sim_map(MapState *state) {
       }
 
       // These run on ALL cells
-      if (c->tempreture > STARTING_TEMP)
-        c->tempreture -= COOLING_PER_FRAME;
+      if (c->tempreture > STARTING_TEMP) {
+        c->tempreture =
+            (int16_t)max(c->tempreture - TEMP_RESET_STEP, STARTING_TEMP);
+      } else if (c->tempreture < STARTING_TEMP) {
+        c->tempreture =
+            (int16_t)min(c->tempreture + TEMP_RESET_STEP, STARTING_TEMP);
+      }
     }
   }
 }
@@ -236,8 +232,8 @@ void handle_input(MapState *state) {
 
   if (IsKeyPressed(K_SELECT_FALLING))
     state->typeToInsert = FALLING;
-  else if (IsKeyPressed(K_SELECT_SOLID))
-    state->typeToInsert = SOLID;
+  else if (IsKeyPressed(K_SELECT_ROCK))
+    state->typeToInsert = ROCK;
   else if (IsKeyPressed(K_SELECT_WOOD))
     state->typeToInsert = WOOD;
   else if (IsKeyPressed(K_SELECT_FIRE))
@@ -307,8 +303,8 @@ int main(void) {
     txt = (char *)TextFormat("%s\t%d", cell_type_to_str(FALLING),
                              state.cellCount.falling);
     draw_ui_text(txt, RIGHT_SIDE, true);
-    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(SOLID),
-                             state.cellCount.solid);
+    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(ROCK),
+                             state.cellCount.rock);
     draw_ui_text(txt, RIGHT_SIDE, false);
     txt = (char *)TextFormat("%s\t%d", cell_type_to_str(WOOD),
                              state.cellCount.wood);

@@ -8,7 +8,7 @@
 typedef enum
     __attribute__((__packed__)) { // this makes it a packed enum (1 byte)
       EMPTY = 0,
-      SOLID,
+      ROCK,
       FALLING,
       WOOD,
       FIRE
@@ -26,7 +26,7 @@ typedef struct {
 } Cell;
 
 typedef struct {
-  int solid;
+  int rock;
   int falling;
   int wood;
   int fire;
@@ -48,7 +48,7 @@ void draw_ui_text(char *txt, bool leftSide, bool resetOffset);
 void sim_map(MapState *state);
 void write_map_to_file(MapState *state);
 void update_cell_count(MapState *state, CellType cType, int diff);
-void insert_cell_at(MapState *state, int x, int y, CellType cType);
+void insert_cell_at(MapState *state, int x, int y, CellType newType);
 void remove_cell_at(MapState *state, int x, int y);
 void handle_input(MapState *state);
 

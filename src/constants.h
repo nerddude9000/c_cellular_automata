@@ -8,10 +8,10 @@
 #define WINDOW_SIZE 1000
 #define MAP_SIZE 50 // WINDOW_SIZE % MAP_SIZE must be 0 to avoid visual bugs.
 
-#define DO_NOT_REPLACE_CELL_ON_INSERT false
+#define REPLACE_CELL_OF_DIFFERENT_TYPE_ON_INSERT true
 enum Shortcuts {
   K_SELECT_FALLING = KEY_ONE,
-  K_SELECT_SOLID = KEY_TWO,
+  K_SELECT_ROCK = KEY_TWO,
   K_SELECT_WOOD = KEY_THREE,
   K_SELECT_FIRE = KEY_FOUR,
   K_PAUSE = KEY_P,
@@ -24,8 +24,10 @@ enum Shortcuts {
 // for now, these are not like real life (of course) for performance reasons,
 // see Cell struct definition in main.h for more info.
 #define STARTING_TEMP 100
+// how much the cell cools/heats up to the STARTING_TEMP per frame.
+#define TEMP_RESET_STEP 20
+
 #define HOT_CELLS_STARTING_TEMP 2000
-#define COOLING_PER_FRAME 20
 #define FIRE_HEATING_PER_FRAME 50
 #define WOOD_SET_ON_FIRE_TEMP 2000
 
