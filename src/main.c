@@ -1,5 +1,5 @@
 #include "main.h"
-#include "constants.h"
+#include "config.h"
 #include "util.h"
 
 #include <raylib.h>
@@ -202,7 +202,7 @@ void sim_map(MapState *state) {
 
             Cell *neighbor = get_cell(state->map, x + cx, y + cy);
             if (neighbor == NULL)
-              return;
+              continue;
 
             neighbor->tempreture = (int16_t)min(
                 neighbor->tempreture + FIRE_HEATING_PER_FRAME, INT16_MAX);
@@ -248,7 +248,7 @@ void write_map_to_file(MapState *state) {
 }
 
 void handle_input(MapState *state) {
-  // TODO: add brush size for some operations.
+  static int brushSize = 1;
 
   if (IsKeyPressed(K_SELECT_FALLING))
     state->typeToInsert = FALLING;
@@ -259,6 +259,12 @@ void handle_input(MapState *state) {
   else if (IsKeyPressed(K_SELECT_FIRE))
     state->typeToInsert = FIRE;
 
+  // the brush size changes by steps of two, because if it's an odd number it
+  // will just be divided by 2 in the insert/remove logic and become the same as
+  // it's closest even number.
+  brushSize =
+      clamp(brushSize + (int)(2 * GetMouseWheelMove()), 1, MAX_BRUSH_SIZE);
+
   if (IsKeyPressed(K_WRITE_MAP))
     write_map_to_file(state);
 
@@ -267,12 +273,27 @@ void handle_input(MapState *state) {
 
   if (IsMouseButtonDown(M_INSERT) && IsCursorOnScreen()) {
     Vector2 mapPos = get_mouse_pos_on_map();
-    insert_cell_at(state, (int)mapPos.x, (int)mapPos.y, state->typeToInsert);
+
+    int radius = brushSize / 2;
+    for (int y = -brushSize; y <= brushSize; y++) {
+      for (int x = -brushSize; x <= brushSize; x++) {
+        if (x * x + y * y <= radius * radius)
+          insert_cell_at(state, (int)mapPos.x + x, (int)mapPos.y + y,
+                         state->typeToInsert);
+      }
+    }
   }
 
   if (IsMouseButtonDown(M_REMOVE) && IsCursorOnScreen()) {
     Vector2 mapPos = get_mouse_pos_on_map();
-    remove_cell_at(state, (int)mapPos.x, (int)mapPos.y);
+
+    int radius = brushSize / 2;
+    for (int y = -brushSize; y <= brushSize; y++) {
+      for (int x = -brushSize; x <= brushSize; x++) {
+        if (x * x + y * y <= radius * radius)
+          remove_cell_at(state, (int)mapPos.x + x, (int)mapPos.y + y);
+      }
+    }
   }
 
   if (IsKeyPressed(K_PAUSE)) {

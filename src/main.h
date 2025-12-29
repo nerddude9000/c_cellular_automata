@@ -1,7 +1,7 @@
 #ifndef FALLING_SANDS_H
 #define FALLING_SANDS_H
 
-#include "constants.h"
+#include "config.h"
 #include <raylib.h>
 #include <stdint.h>
 
@@ -51,5 +51,8 @@ void update_cell_count(MapState *state, CellType cType, int diff);
 void insert_cell_at(MapState *state, int x, int y, CellType newType);
 void remove_cell_at(MapState *state, int x, int y);
 void handle_input(MapState *state);
+
+// ---- DON'T TOUCH ----
+#define CELL_SIZE (WINDOW_SIZE / MAP_SIZE)
 
 #endif

@@ -6,10 +6,11 @@
 // ---- Customizable ----
 // screen (and map) must be square, so one constant for each is enough
 #define WINDOW_SIZE 1000
-#define MAP_SIZE 50 // WINDOW_SIZE % MAP_SIZE must be 0 to avoid visual bugs.
+#define MAP_SIZE 500 // WINDOW_SIZE % MAP_SIZE must be 0 to avoid visual bugs.
 #define FPS 120
 
 #define REPLACE_CELL_OF_DIFFERENT_TYPE_ON_INSERT true
+#define MAX_BRUSH_SIZE 64
 enum Shortcuts {
   K_SELECT_FALLING = KEY_ONE,
   K_SELECT_ROCK = KEY_TWO,
@@ -37,8 +38,5 @@ enum Shortcuts {
 #define FIRE_LIFETIME (FPS * 3)
 
 #define FONT_SIZE 20
-
-// ---- DON'T TOUCH ----
-#define CELL_SIZE (WINDOW_SIZE / MAP_SIZE)
 
 #endif

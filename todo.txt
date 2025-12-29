@@ -1,13 +1,3 @@
-decouple sim fps from render fps if possible (this makes inserting smoother when moving the mouse fast)
-
-maybe make fire spread by chance?
-    ie: 1/2 to increase spread.
-
-insert by brush
-    set brush size
-    insert by brush (hopefully blazingly fast)
-    remove by brush
-
 liquid nitrogen
     because why not
     (opposite of fire of course, and freezes water)
@@ -24,3 +14,6 @@ maybe decouple map size from window size to allow for different aspect ratios
 add velocity to snad.
 
 zooming
+
+maybe make fire spread by chance?
+    ie: 1/2 to increase spread.
