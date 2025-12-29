@@ -165,14 +165,21 @@ void sim_map(MapState *state) {
       switch ((CellType)c->type) {
       case FALLING:; // NOTE: how does this ';' make the compiler shut up?!
         Cell *next = NULL;
-        if (can_sand_move_to(state->map, x, y + 1))
+
+        if (can_sand_move_to(state->map, x, y + 1)) {
           next = get_cell(state->map, x, y + 1);
+          remove_cell_at(state, x, y + 1);
+        }
 
-        else if (can_sand_move_to(state->map, x + 1, y + 1))
+        else if (can_sand_move_to(state->map, x + 1, y + 1)) {
           next = get_cell(state->map, x + 1, y + 1);
+          remove_cell_at(state, x + 1, y + 1);
+        }
 
-        else if (can_sand_move_to(state->map, x - 1, y + 1))
+        else if (can_sand_move_to(state->map, x - 1, y + 1)) {
           next = get_cell(state->map, x - 1, y + 1);
+          remove_cell_at(state, x - 1, y + 1);
+        }
 
         if (next != NULL) {
           next->type = FALLING;
@@ -194,6 +201,9 @@ void sim_map(MapState *state) {
               continue; // we don't check own cell
 
             Cell *neighbor = get_cell(state->map, x + cx, y + cy);
+            if (neighbor == NULL)
+              return;
+
             neighbor->tempreture = (int16_t)min(
                 neighbor->tempreture + FIRE_HEATING_PER_FRAME, INT16_MAX);
           }
@@ -282,9 +292,9 @@ int main(void) {
   init_map(&state);
 
   // window is always square
-  InitWindow(WINDOW_SIZE, WINDOW_SIZE, "Falling sandc");
+  InitWindow(WINDOW_SIZE, WINDOW_SIZE, "Cellular Automata");
 
-  SetTargetFPS(60);
+  SetTargetFPS(FPS);
   while (!WindowShouldClose()) {
     handle_input(&state);
 
@@ -318,6 +328,7 @@ int main(void) {
     draw_ui_text(txt, RIGHT_SIDE, false);
     txt = (char *)TextFormat("%s\t%d", cell_type_to_str(WOOD),
                              state.cellCount.wood);
+
     draw_ui_text(txt, RIGHT_SIDE, false);
     txt = (char *)TextFormat("%s\t%d", cell_type_to_str(FIRE),
                              state.cellCount.fire);
