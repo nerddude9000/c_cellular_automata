@@ -31,14 +31,17 @@ static inline const char *cell_type_to_str(CellType cType) {
   case FALLING:
     ret = "SAND";
     break;
-  case ROCK:
-    ret = "ROCK";
+  case WATER:
+    ret = "WATER";
     break;
   case WOOD:
     ret = "WOOD";
     break;
   case FIRE:
     ret = "FIRE";
+    break;
+  case ROCK:
+    ret = "ROCK";
     break;
   case EMPTY:
     break;
@@ -47,7 +50,7 @@ static inline const char *cell_type_to_str(CellType cType) {
   return ret;
 }
 
-static inline bool can_sand_move_to(Cell *map, int x, int y) {
+static inline bool can_fall_to(Cell *map, int x, int y) {
   Cell *c = get_cell(map, x, y);
 
   return c != NULL && (c->type == EMPTY || c->type == FIRE);

@@ -8,28 +8,29 @@
 typedef enum
     __attribute__((__packed__)) { // this makes it a packed enum (1 byte)
       EMPTY = 0,
-      ROCK,
       FALLING,
       WOOD,
-      FIRE
+      FIRE,
+      WATER,
+      ROCK,
     } CellType;
 
 typedef struct {
   uint8_t type;
   bool flammable;
-  int16_t tempreture; // using i16 keeps the struct small (floats add 4 bytes
-                      // per cell at least). i might change it in the future if
-                      // we have enough padding space.
+  int16_t
+      tempreture; // using i16 keeps the struct small (floats add 4 bytes
+                  // per cell at least). and it's enough for this simple app.
 
-  uint16_t lifetime; // how many frames this should live, currently used by fire
-                     // only.
+  uint16_t lifetime; // in frames (not all cells have a lifetime)
 } Cell;
 
 typedef struct {
-  int rock;
   int falling;
   int wood;
   int fire;
+  int water;
+  int rock;
 } CellCount;
 
 typedef struct {

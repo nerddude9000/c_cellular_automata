@@ -21,6 +21,7 @@ Cell new_cell(CellType cType) {
   case WOOD:
     c.flammable = true;
     break;
+  case WATER:
   case FALLING:
   case ROCK:
   case EMPTY:
@@ -42,14 +43,17 @@ void update_cell_count(MapState *state, CellType cType, int diff) {
   case FALLING:
     state->cellCount.falling += diff;
     break;
-  case ROCK:
-    state->cellCount.rock += diff;
+  case WATER:
+    state->cellCount.water += diff;
     break;
   case WOOD:
     state->cellCount.wood += diff;
     break;
   case FIRE:
     state->cellCount.fire += diff;
+    break;
+  case ROCK:
+    state->cellCount.rock += diff;
     break;
   case EMPTY:
     break;
@@ -110,8 +114,8 @@ void draw_map(Cell map[]) {
       case FALLING:
         color = YELLOW;
         break;
-      case ROCK:
-        color = GRAY;
+      case WATER:
+        color = BLUE;
         break;
       case WOOD:
         color = BROWN;
@@ -119,6 +123,9 @@ void draw_map(Cell map[]) {
       case FIRE:;
         int halfLife = FIRE_LIFETIME / 2;
         color = c->lifetime > halfLife ? RED : ORANGE;
+        break;
+      case ROCK:
+        color = GRAY;
         break;
       case EMPTY:
         break;
@@ -163,20 +170,20 @@ void sim_map(MapState *state) {
       Cell *c = get_cell(state->map, x, y);
 
       switch ((CellType)c->type) {
-      case FALLING:; // NOTE: how does this ';' make the compiler shut up?!
+      case FALLING: {
         Cell *next = NULL;
 
-        if (can_sand_move_to(state->map, x, y + 1)) {
+        if (can_fall_to(state->map, x, y + 1)) {
           next = get_cell(state->map, x, y + 1);
           remove_cell_at(state, x, y + 1);
         }
 
-        else if (can_sand_move_to(state->map, x + 1, y + 1)) {
+        else if (can_fall_to(state->map, x + 1, y + 1)) {
           next = get_cell(state->map, x + 1, y + 1);
           remove_cell_at(state, x + 1, y + 1);
         }
 
-        else if (can_sand_move_to(state->map, x - 1, y + 1)) {
+        else if (can_fall_to(state->map, x - 1, y + 1)) {
           next = get_cell(state->map, x - 1, y + 1);
           remove_cell_at(state, x - 1, y + 1);
         }
@@ -185,8 +192,41 @@ void sim_map(MapState *state) {
           next->type = FALLING;
           c->type = EMPTY;
         }
+      } break;
 
-        break;
+      case WATER: {
+        Cell *next = NULL;
+
+        if (can_fall_to(state->map, x, y + 1)) {
+          next = get_cell(state->map, x, y + 1);
+          remove_cell_at(state, x, y + 1);
+        }
+
+        else if (can_fall_to(state->map, x + 1, y + 1)) {
+          next = get_cell(state->map, x + 1, y + 1);
+          remove_cell_at(state, x + 1, y + 1);
+        }
+
+        else if (can_fall_to(state->map, x - 1, y + 1)) {
+          next = get_cell(state->map, x - 1, y + 1);
+          remove_cell_at(state, x - 1, y + 1);
+        }
+
+        else if (can_fall_to(state->map, x + 1, y)) {
+          next = get_cell(state->map, x + 1, y);
+          remove_cell_at(state, x + 1, y);
+        }
+
+        else if (can_fall_to(state->map, x - 1, y)) {
+          next = get_cell(state->map, x - 1, y);
+          remove_cell_at(state, x - 1, y);
+        }
+
+        if (next != NULL) {
+          next->type = WATER;
+          c->type = EMPTY;
+        }
+      } break;
 
       case FIRE:;
         if (c->lifetime <= 0 || c->tempreture <= HOT_CELLS_STARTING_TEMP / 2)
@@ -258,6 +298,8 @@ void handle_input(MapState *state) {
     state->typeToInsert = WOOD;
   else if (IsKeyPressed(K_SELECT_FIRE))
     state->typeToInsert = FIRE;
+  else if (IsKeyPressed(K_SELECT_WATER))
+    state->typeToInsert = WATER;
 
   // the brush size changes by steps of two, because if it's an odd number it
   // will just be divided by 2 in the insert/remove logic and become the same as
@@ -344,8 +386,8 @@ int main(void) {
     txt = (char *)TextFormat("%s\t%d", cell_type_to_str(FALLING),
                              state.cellCount.falling);
     draw_ui_text(txt, RIGHT_SIDE, true);
-    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(ROCK),
-                             state.cellCount.rock);
+    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(WATER),
+                             state.cellCount.water);
     draw_ui_text(txt, RIGHT_SIDE, false);
     txt = (char *)TextFormat("%s\t%d", cell_type_to_str(WOOD),
                              state.cellCount.wood);
@@ -353,6 +395,9 @@ int main(void) {
     draw_ui_text(txt, RIGHT_SIDE, false);
     txt = (char *)TextFormat("%s\t%d", cell_type_to_str(FIRE),
                              state.cellCount.fire);
+    draw_ui_text(txt, RIGHT_SIDE, false);
+    txt = (char *)TextFormat("%s\t%d", cell_type_to_str(ROCK),
+                             state.cellCount.rock);
     draw_ui_text(txt, RIGHT_SIDE, false);
 
     EndDrawing();
