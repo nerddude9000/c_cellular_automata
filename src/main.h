@@ -12,6 +12,7 @@ typedef enum
       WOOD,
       FIRE,
       WATER,
+      STEAM,
       ROCK,
     } CellType;
 

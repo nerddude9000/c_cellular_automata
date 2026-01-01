@@ -31,6 +31,7 @@ static inline const char *cell_type_to_str(CellType cType) {
   case FALLING:
     ret = "SAND";
     break;
+  case STEAM:
   case WATER:
     ret = "WATER";
     break;

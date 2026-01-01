@@ -33,6 +33,7 @@ enum Shortcuts {
 #define HOT_CELLS_STARTING_TEMP 2000
 #define FIRE_HEATING_PER_FRAME 50
 #define WOOD_SET_ON_FIRE_TEMP 2000
+#define WATER_BOIL_TEMP 1500
 
 // in frames, if the game is 60 FPS then it will last for (60*y)
 // frames (y seconds).

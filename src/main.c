@@ -21,6 +21,7 @@ Cell new_cell(CellType cType) {
   case WOOD:
     c.flammable = true;
     break;
+  case STEAM:
   case WATER:
   case FALLING:
   case ROCK:
@@ -44,6 +45,7 @@ void update_cell_count(MapState *state, CellType cType, int diff) {
     state->cellCount.falling += diff;
     break;
   case WATER:
+  case STEAM: // steam is counted with water
     state->cellCount.water += diff;
     break;
   case WOOD:
@@ -117,6 +119,9 @@ void draw_map(Cell map[]) {
       case WATER:
         color = BLUE;
         break;
+      case STEAM:
+        color = WHITE;
+        break;
       case WOOD:
         color = BROWN;
         break;
@@ -161,15 +166,62 @@ void draw_ui_text(char *txt, bool leftSide, bool resetOffset) {
     yOffsetRight += FONT_SIZE;
 }
 
+void sim_map_rising_cells(MapState *state) {
+  // here we simulate stuff that goes up like steam.
+  // this prevents them from being processed multiple times in a single frame.
+  // TODO: probably find a better way for this.
+
+  for (int y = 0; y < MAP_SIZE; y++) {
+    for (int x = 0; x < MAP_SIZE; x++) {
+      Cell *c = get_cell(state->map, x, y);
+
+      switch ((CellType)c->type) {
+      case STEAM: {
+        if (c->tempreture < WATER_BOIL_TEMP) {
+          c->type = WATER;
+          break;
+        }
+
+        Cell *next = NULL;
+
+        if (can_fall_to(state->map, x, y - 1)) {
+          next = get_cell(state->map, x, y - 1);
+          remove_cell_at(state, x, y - 1);
+        }
+
+        else if (can_fall_to(state->map, x + 1, y - 1)) {
+          next = get_cell(state->map, x + 1, y - 1);
+          remove_cell_at(state, x + 1, y - 1);
+        }
+
+        else if (can_fall_to(state->map, x - 1, y - 1)) {
+          next = get_cell(state->map, x - 1, y - 1);
+          remove_cell_at(state, x - 1, y - 1);
+        }
+
+        if (next != NULL) {
+          next->type = STEAM;
+          c->type = EMPTY;
+        }
+      } break;
+      default:
+        break;
+      }
+    }
+  }
+}
+
 void sim_map(MapState *state) {
-  // we iterate backwards as to not process the same sand twice.
-  // i think this is only temporary, as adding rising smoke will cause the same
-  // problem. maybe we can use two maps (current and next) in the future.
+  // here we simulate everything except stuff that rises like steam.
+  // we start from the bottom; this prevents falling things from being processed
+  // multiple times in a single frame.
   for (int y = MAP_SIZE - 1; y >= 0; y--) {
     for (int x = 0; x < MAP_SIZE; x++) {
       Cell *c = get_cell(state->map, x, y);
 
       switch ((CellType)c->type) {
+        // TODO: find a better way to move sand, steam and water, there has
+        // to be a better way than this crap.
       case FALLING: {
         Cell *next = NULL;
 
@@ -195,6 +247,11 @@ void sim_map(MapState *state) {
       } break;
 
       case WATER: {
+        if (c->tempreture >= WATER_BOIL_TEMP) {
+          c->type = STEAM;
+          break;
+        }
+
         Cell *next = NULL;
 
         if (can_fall_to(state->map, x, y + 1)) {
@@ -257,6 +314,7 @@ void sim_map(MapState *state) {
           insert_cell_at(state, x, y, FIRE);
         }
         break;
+      case STEAM:
       case EMPTY:
         break;
       }
@@ -301,9 +359,9 @@ void handle_input(MapState *state) {
   else if (IsKeyPressed(K_SELECT_WATER))
     state->typeToInsert = WATER;
 
-  // the brush size changes by steps of two, because if it's an odd number it
-  // will just be divided by 2 in the insert/remove logic and become the same as
-  // it's closest even number.
+  // the brush size changes by steps of two, because if it's an odd number
+  // it will just be divided by 2 in the insert/remove logic and become the
+  // same as it's closest even number.
   brushSize =
       clamp(brushSize + (int)(2 * GetMouseWheelMove()), 1, MAX_BRUSH_SIZE);
 
@@ -345,7 +403,8 @@ void handle_input(MapState *state) {
 
 int main(void) {
   if (WINDOW_SIZE % MAP_SIZE != 0) {
-    printf("Window size must be divisible by map size to avoid visual bugs.\n");
+    printf("Window size must be divisible by map size to avoid visual "
+           "bugs.\n");
     printf("Please change this in constants.h and recompile.\n");
     return 1;
   }
@@ -361,8 +420,10 @@ int main(void) {
   while (!WindowShouldClose()) {
     handle_input(&state);
 
-    if (!state.isPaused)
+    if (!state.isPaused) {
       sim_map(&state);
+      sim_map_rising_cells(&state);
+    }
 
     BeginDrawing();
 
