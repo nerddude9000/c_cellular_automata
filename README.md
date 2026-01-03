@@ -8,8 +8,7 @@ Don't expect 999-years-of-experience C code (:
 
 This isn't currently finished, and i will work on it from time to time.
 
-don't expect a full fledged simulation though, and don't expect 999 years of experience hardcore C code, I made this project to learn C.
-Here is the 'philosophy' of this project:
+Here is the general plan for this project (many of which are already implemented):
 
 - Has many unique cell types (sand, water, wood, fire... and more) that interact with eachother.
 - Somewhat realistic-ish... (heat, fire spread, gravity, chemicals... not all of which are implemnted yet).
@@ -33,6 +32,15 @@ You can build this by using make:
 For now you need to install raylib on your machine for it to work, i will add the lib to the project files soon.
 
 This wasn't tested on windows, but it should be easy enough to build as it has only one .c file.
+
+## Usage
+
+You can refer to `config.h` for the controls, but generally you use:
+
+- the number row to select cell types,
+- left click for inserting cells,
+- right click for deleting,
+- mouse wheel to change brush size.
 
 ## Pull requests
 
