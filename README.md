@@ -22,7 +22,7 @@ Here is the 'philosophy' of this project:
 
 You can build this by using make:
 
-`make`          // builds everything to .build/
+`make`          // builds everything to 'build/'
 
 `make run`      // builds and runs the debug build
 
