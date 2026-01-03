@@ -54,7 +54,13 @@ static inline const char *cell_type_to_str(CellType cType) {
 static inline bool can_fall_to(Cell *map, int x, int y) {
   Cell *c = get_cell(map, x, y);
 
-  return c != NULL && (c->type == EMPTY || c->type == FIRE);
+  return c != NULL && (c->type == EMPTY || c->type == FIRE || c->type == STEAM);
+}
+
+static inline bool can_rise_to(Cell *map, int x, int y) {
+  Cell *c = get_cell(map, x, y);
+
+  return c != NULL && (c->type == EMPTY || c->type == FIRE || c->type == WATER);
 }
 
 #endif

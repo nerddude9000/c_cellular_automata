@@ -166,6 +166,7 @@ void draw_ui_text(char *txt, bool leftSide, bool resetOffset) {
     yOffsetRight += FONT_SIZE;
 }
 
+#if 0  // disable this until i find a better idea
 void sim_map_rising_cells(MapState *state) {
   // here we simulate stuff that goes up like steam.
   // this prevents them from being processed multiple times in a single frame.
@@ -184,24 +185,28 @@ void sim_map_rising_cells(MapState *state) {
 
         Cell *next = NULL;
 
-        if (can_fall_to(state->map, x, y - 1)) {
+        if (can_rise_to(state->map, x, y - 1)) {
           next = get_cell(state->map, x, y - 1);
-          remove_cell_at(state, x, y - 1);
         }
 
-        else if (can_fall_to(state->map, x + 1, y - 1)) {
+        else if (can_rise_to(state->map, x + 1, y - 1)) {
           next = get_cell(state->map, x + 1, y - 1);
-          remove_cell_at(state, x + 1, y - 1);
         }
 
-        else if (can_fall_to(state->map, x - 1, y - 1)) {
+        else if (can_rise_to(state->map, x - 1, y - 1)) {
           next = get_cell(state->map, x - 1, y - 1);
-          remove_cell_at(state, x - 1, y - 1);
         }
 
         if (next != NULL) {
-          next->type = STEAM;
-          c->type = EMPTY;
+          if (next->type == FIRE) {
+            next->type = EMPTY;
+          }
+
+          // swap cells
+          // TODO: maybe add this behaviour to all falling/rising cells
+          Cell *temp = c;
+          *next = *c;
+          *c = *temp;
         }
       } break;
       default:
@@ -210,6 +215,7 @@ void sim_map_rising_cells(MapState *state) {
     }
   }
 }
+#endif // steam simulation
 
 void sim_map(MapState *state) {
   // here we simulate everything except stuff that rises like steam.
@@ -220,8 +226,10 @@ void sim_map(MapState *state) {
       Cell *c = get_cell(state->map, x, y);
 
       switch ((CellType)c->type) {
-        // TODO: find a better way to move sand, steam and water, there has
-        // to be a better way than this crap.
+        // TODO: find a better way to move sand and water, there has
+        // to be a better way than this crap for many reasons; one of which is
+        // that this resets ALL the information of the cell that we will move
+        // to.
       case FALLING: {
         Cell *next = NULL;
 
@@ -247,10 +255,12 @@ void sim_map(MapState *state) {
       } break;
 
       case WATER: {
+#if 0
         if (c->tempreture >= T_WATER_BOIL) {
           c->type = STEAM;
           break;
         }
+#endif // disable boiling
 
         Cell *next = NULL;
 
@@ -419,8 +429,8 @@ int main(void) {
     handle_input(&state);
 
     if (!state.isPaused) {
+      // sim_map_rising_cells(&state); disabled for now (until i fix steam)
       sim_map(&state);
-      sim_map_rising_cells(&state);
     }
 
     BeginDrawing();
