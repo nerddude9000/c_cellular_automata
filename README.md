@@ -13,6 +13,7 @@ Here is the 'philosophy' of this project:
 
 - Has many unique cell types (sand, water, wood, fire... and more) that interact with eachother.
 - Somewhat realistic-ish... (heat, fire spread, gravity, chemicals... not all of which are implemnted yet).
+- UI.
 - Should be as performant as reasonably possible.
 - Should not depend on anything other than Raylib (third party wise).
 - Easily configurable using a config file (currently config.h).
