@@ -40,5 +40,5 @@ I'm currently not accepting pull requests, this is a pet project and i want to w
 
 ## License
 
-You can do whatever you want with this as long as it doesn't go against Islamic Teachings, whose prohibitions include adding music.
+You can do whatever you want with this as long as it doesn't go against Islamic teachings, whose prohibitions include adding music.
 
