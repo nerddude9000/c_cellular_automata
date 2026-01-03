@@ -11,12 +11,12 @@
 
 Cell new_cell(CellType cType) {
   Cell c = {
-      .type = (uint8_t)cType, .tempreture = TEMP_STARTING, .flammable = false};
+      .type = (uint8_t)cType, .tempreture = T_STARTING, .flammable = false};
 
   switch (cType) {
   case FIRE:
     c.lifetime = FIRE_LIFETIME;
-    c.tempreture = TEMP_STARTING_HOT_CELLS;
+    c.tempreture = T_STARTING_HOT_CELLS;
     break;
   case WOOD:
     c.flammable = true;
@@ -177,7 +177,7 @@ void sim_map_rising_cells(MapState *state) {
 
       switch ((CellType)c->type) {
       case STEAM: {
-        if (c->tempreture < TEMP_WATER_BOIL) {
+        if (c->tempreture < T_WATER_BOIL) {
           c->type = WATER;
           break;
         }
@@ -247,7 +247,7 @@ void sim_map(MapState *state) {
       } break;
 
       case WATER: {
-        if (c->tempreture >= TEMP_WATER_BOIL) {
+        if (c->tempreture >= T_WATER_BOIL) {
           c->type = STEAM;
           break;
         }
@@ -286,7 +286,7 @@ void sim_map(MapState *state) {
       } break;
 
       case FIRE:;
-        if (c->lifetime <= 0 || c->tempreture <= TEMP_STARTING_HOT_CELLS / 2)
+        if (c->lifetime <= 0 || c->tempreture <= T_STARTING_HOT_CELLS / 2)
           remove_cell_at(state, x, y);
         else
           c->lifetime--;
@@ -302,14 +302,14 @@ void sim_map(MapState *state) {
               continue;
 
             neighbor->tempreture = (int16_t)min(
-                neighbor->tempreture + TEMP_FIRE_HEAT_STEP, INT16_MAX);
+                neighbor->tempreture + T_FIRE_HEAT_STEP, INT16_MAX);
           }
         }
         break;
       case ROCK:
         break;
       case WOOD:
-        if (c->tempreture >= TEMP_WOOD_ENGULF_IN_FIRE) {
+        if (c->tempreture >= T_WOOD_ENGULF_IN_FIRE) {
           remove_cell_at(state, x, y);
           insert_cell_at(state, x, y, FIRE);
         }
@@ -320,12 +320,10 @@ void sim_map(MapState *state) {
       }
 
       // These run on ALL cells
-      if (c->tempreture > TEMP_STARTING) {
-        c->tempreture =
-            (int16_t)max(c->tempreture - TEMP_RESET_STEP, TEMP_STARTING);
-      } else if (c->tempreture < TEMP_STARTING) {
-        c->tempreture =
-            (int16_t)min(c->tempreture + TEMP_RESET_STEP, TEMP_STARTING);
+      if (c->tempreture > T_STARTING) {
+        c->tempreture = (int16_t)max(c->tempreture - T_RESET_STEP, T_STARTING);
+      } else if (c->tempreture < T_STARTING) {
+        c->tempreture = (int16_t)min(c->tempreture + T_RESET_STEP, T_STARTING);
       }
     }
   }

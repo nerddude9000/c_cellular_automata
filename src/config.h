@@ -24,16 +24,17 @@ enum Shortcuts {
   M_REMOVE = MOUSE_RIGHT_BUTTON
 };
 
+/* ---- Tempreture stuff ---- */
 // for now, these are not like real life (of course) for performance reasons,
 // see Cell struct definition in main.h for more info.
-#define TEMP_STARTING 100
+#define T_STARTING 100
 // how much the cell cools/heats up to the STARTING_TEMP per frame.
-#define TEMP_RESET_STEP 20
+#define T_RESET_STEP 20
 
-#define TEMP_STARTING_HOT_CELLS 2000
-#define TEMP_FIRE_HEAT_STEP 50
-#define TEMP_WOOD_ENGULF_IN_FIRE 2000
-#define TEMP_WATER_BOIL 1500
+#define T_STARTING_HOT_CELLS 2000
+#define T_FIRE_HEAT_STEP 50
+#define T_WOOD_ENGULF_IN_FIRE 2000
+#define T_WATER_BOIL 1500
 
 // in frames, if the game is 60 FPS then it will last for (60*y)
 // frames (y seconds).
