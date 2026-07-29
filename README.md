@@ -1,8 +1,6 @@
 # Cellular Automata in C
 
-Simple 'falling sands' simulation application, made in C99 and uses Raylib for rendering. It's meant as a pet project to learn C, and it can probably be used for educational purposes.
-
-Don't expect 999-years-of-experience C code (:
+Simple 'falling sands' simulation application, made in C99 and uses Raylib for rendering. It's meant as a pet project to learn C.
 
 ## Features
 
@@ -21,25 +19,25 @@ Here is the general plan for this project (many of which are already implemented
 
 You can build this by using make:
 
-`make`          // builds everything to 'build/'
+`make` // builds debug and release executables
 
-`make run`      // builds and runs the debug build
+`make run` // builds and runs the debug executable
 
-`make debug`    // debug build
+`make debug` // builds debug executable
 
-`make release`  // release build
+`make release` // builds release executable
 
 For now you need to install raylib on your machine for it to work, i will add the lib to the project files soon.
 
-This wasn't tested on windows, but it should be easy enough to build as it has only one .c file.
+This wasn't tested on windows, but it should be easy enough to build.
 
 ## Usage
 
-You can refer to `config.h` for the controls, but generally you use:
+You can refer to `config.h` for the controls, default keybinds are:
 
-- the number row to select cell types,
-- left click for inserting cells,
-- right click for deleting,
+- number row to select cell types.
+- left click for inserting cells.
+- right click for deleting cells.
 - mouse wheel to change brush size.
 
 ## Pull requests
@@ -48,5 +46,4 @@ I'm currently not accepting pull requests, this is a pet project and i want to w
 
 ## License
 
-You can do whatever you want with this as long as it doesn't go against Islamic teachings, whose prohibitions include adding music (and other things).
-
+You can do whatever you want with this as long as it doesn't go against Islamic law.
