@@ -27,11 +27,11 @@ typedef struct {
 } Cell;
 
 typedef struct {
-  int falling;
-  int wood;
-  int fire;
-  int water;
-  int rock;
+  uint16_t falling;
+  uint16_t wood;
+  uint16_t fire;
+  uint16_t water;
+  uint16_t rock;
 } CellCount;
 
 typedef struct {
