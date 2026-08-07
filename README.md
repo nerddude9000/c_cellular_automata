@@ -43,7 +43,3 @@ You can refer to `config.h` for the controls, default keybinds are:
 ## Pull requests
 
 I'm currently not accepting pull requests, this is a pet project and i want to work on it solo, you're free to fork though (refer to the License section beforehand).
-
-## License
-
-You can do whatever you want with this as long as it doesn't go against Islamic law.
